@@ -1,0 +1,148 @@
+/* General Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #F4F4F4; /* Light Gray Background */
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Container for the Form */
+  .container {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #FFFFFF; /* White Background for the Form */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Heading Styling */
+  h2 {
+    text-align: center;
+    color: #333333; /* Dark Gray for Text */
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  /* Form Elements Styling */
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #333333; /* Dark Gray for Labels */
+  }
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border: 1px solid #CCCCCC; /* Light Gray Border */
+    font-size: 14px;
+    background-color: #FFFFFF; /* White Background for Input Fields */
+  }
+  
+  /* Input Focus Effect */
+  input:focus {
+    border-color: #007BFF; /* Light Blue Border on Focus */
+    outline: none;
+  }
+  
+  /* Button Styling */
+  button {
+    padding: 10px;
+    background-color: #007BFF; /* Blue for Primary Button */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  /* Button Hover Effect */
+  button:hover {
+    background-color: #0056b3; /* Darker Blue on Hover */
+  }
+  
+  /* Link Styling */
+  p {
+    text-align: center;
+  }
+  
+  a {
+    color: #007BFF; /* Blue for Links */
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Error and Success Messages */
+  .error-message, .success-message {
+    color: #DC3545; /* Red for Error */
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .success-message {
+    color: #28A745; /* Green for Success */
+  }
+  
+  /* Mobile and Tablet Responsiveness */
+  @media (max-width: 768px) {
+    .container {
+      padding: 15px;
+      width: 90%;
+    }
+  
+    h2 {
+      font-size: 22px;
+    }
+  
+    label {
+      font-size: 12px;
+    }
+  
+    input {
+      padding: 8px;
+      font-size: 12px;
+    }
+  
+    button {
+      font-size: 14px;
+      padding: 8px;
+    }
+  }
+  
+  /* Smaller Screens (Mobile) */
+  @media (max-width: 480px) {
+    .container {
+      width: 95%;
+      padding: 10px;
+    }
+  
+    h2 {
+      font-size: 20px;
+    }
+  
+    label {
+      font-size: 12px;
+    }
+  
+    input {
+      padding: 8px;
+      font-size: 12px;
+    }
+  
+    button {
+      font-size: 14px;
+      padding: 8px;
+    }
+  }
+  

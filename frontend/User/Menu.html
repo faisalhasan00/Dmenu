@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Menu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./asset/Style/menu.css">
+</head>
+<body>
+    <header>
+        <h1>Restaurant Name</h1>
+        <div class="search-container">
+            <input type="text" id="search-bar" placeholder="Search menu items...">
+            <button id="search-button">Search</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="menu-container">
+            <h2>Menu Items</h2>
+            <div class="menu-items" id="menu-items"></div>
+        </div>
+
+        <div class="recommended-items">
+            <h2>Recommended Items</h2>
+            <div class="menu-items" id="recommended-items"></div>
+        </div>
+    </div>
+
+    <div class="floating-cart-icon" id="cart-icon" title="View Cart">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/shopping-cart.png" alt="Cart Icon">
+        <span id="cart-count">0</span>
+    </div>
+
+    <script>
+        const cartCountElement = document.getElementById('cart-count');
+        let cartCount = JSON.parse(localStorage.getItem('cart'))?.length || 0;
+
+        // Update cart count display
+        function updateCartCount() {
+            cartCountElement.textContent = cartCount;
+        }
+
+        // Add to cart function
+        function addToCart(itemId, itemName, itemPrice) {
+            const cartItem = { id: itemId, name: itemName, price: itemPrice, quantity: 1 };
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const existingItem = cart.find(item => item.id === itemId);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push(cartItem);
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            cartCount++;
+            updateCartCount();
+        }
+
+        // Redirect to cart page
+        document.getElementById('cart-icon').onclick = function() {
+            window.location.href = 'cart.html';
+        };
+
+        // Fetch menu items from API
+        fetch('http://localhost:5000/api/menu')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const menuItemsElement = document.getElementById('menu-items');
+                data.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'menu-item';
+                    itemElement.innerHTML = `
+                        <img src="${item.image}" alt="${item.name}">
+                        <h3>${item.name}</h3>
+                        <p>${item.description}</p>
+                        <p class="price">₹${item.price}</p>
+                        <button onclick="addToCart('${item._id}', '${item.name}', ${item.price})">Add to Cart</button>
+                    `;
+                    menuItemsElement.appendChild(itemElement);
+                });
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+
+        // Implement search functionality
+        document.getElementById('search-button').onclick = function() {
+            const query = document.getElementById('search-bar').value.toLowerCase();
+            const items = document.querySelectorAll('.menu-item');
+            items.forEach(item => {
+                const itemName = item.querySelector('h3').innerText.toLowerCase();
+                item.style.display = itemName.includes(query) ? '' : 'none';
+            });
+        };
+
+        // Handle Enter key in search
+        document.getElementById('search-bar').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                document.getElementById('search-button').click();
+            }
+        });
+
+        updateCartCount(); // Initial update
+    </script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Restaurant Dashboard</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Nunito|Poppins" rel="stylesheet">
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Custom styles */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8f9fc;
+      color: #495057;
+    }
+
+    header {
+      background-color: #343a40;
+      padding: 10px 20px;
+      color: white;
+    }
+
+    header .logo img {
+      max-width: 40px;
+      margin-right: 10px;
+    }
+
+    header h1 {
+      font-size: 24px;
+    }
+
+    #sidebar {
+      background-color: #f6f9ff;
+      padding-top: 20px;
+      height: 100vh;
+      color: #4154f1; 
+    }
+
+    #sidebar .sidebar-nav {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    #sidebar .sidebar-nav .nav-item {
+      padding: 10px 20px;
+    }
+
+    #sidebar .sidebar-nav .nav-item a {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+
+    #sidebar .sidebar-nav .nav-item a:hover {
+      background-color: #495057;
+      border-radius: 5px;
+    }
+
+    #sidebar .sidebar-nav .nav-item a .bi {
+      margin-right: 10px;
+    }
+
+    .main {
+      padding: 40px 20px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stats .card {
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      width: 48%;
+      transition: all 0.3s ease;
+    }
+
+    .stats .card:hover {
+      transform: scale(1.05);
+    }
+
+    .stats .card .icon {
+      font-size: 30px;
+      color: #007bff;
+      margin-bottom: 15px;
+    }
+
+    .stats .card h2 {
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .stats .card p {
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .chart-container {
+      margin-top: 40px;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .loader {
+      text-align: center;
+      font-size: 18px;
+      color: #007bff;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="index.html" class="logo d-flex align-items-center">
+        <img src="assets/img/logo.png" alt="Restaurant Logo">
+        <span class="d-none d-lg-block">Restaurant Dashboard</span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn" onclick="toggleSidebar()"></i>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="Dashboard.html">
+          <i class="bi bi-grid"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="Order.html">
+          <i class="bi bi-receipt"></i>
+          <span>Orders</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="Menuediting.html">
+          <i class="bi bi-menu-button-wide"></i>
+          <span>Menu Management</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="Order.html">
+          <i class="bi bi-bar-chart-line"></i>
+          <span>Reports</span>
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Main Content -->
+  <main id="main" class="main">
+    <div class="container">
+      <h1>Welcome to the Dashboard</h1>
+
+      <!-- Stats Cards -->
+      <div class="stats">
+        <div class="card">
+          <div class="icon">
+            <i class="bi bi-currency-dollar"></i>
+          </div>
+          <h2>Total Payments</h2>
+          <p id="total-payments">Loading...</p>
+        </div>
+        <div class="card">
+          <div class="icon">
+            <i class="bi bi-cart"></i>
+          </div>
+          <h2>Total Orders</h2>
+          <p id="total-orders">Loading...</p>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="chart-container">
+        <canvas id="orderChart"></canvas>
+      </div>
+
+      <!-- Loading indicator -->
+      <div class="loader" id="loader">Loading...</div>
+    </div>
+  </main>
+
+  <script>
+    // JavaScript for sidebar toggle
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('active');
+    }
+
+    // Fetch payment data from API and update the UI
+    async function fetchPaymentData() {
+      try {
+        // Show loading
+        document.getElementById('loader').style.display = 'block';
+
+        // Fetch data from API
+        const response = await fetch('http://localhost:5000/api/payment');
+        const data = await response.json();
+
+        // Log the API response to check its structure
+        console.log(data);
+
+        // Handle undefined or missing data
+        const totalPayments = data.totalPayments ?? 0;
+        const totalOrders = data.totalOrders ?? 0;
+
+        // Update UI with fetched data
+        document.getElementById('total-payments').innerText = `$${totalPayments}`;
+        document.getElementById('total-orders').innerText = totalOrders;
+
+        // Hide loading after data is fetched
+        document.getElementById('loader').style.display = 'none';
+      } catch (error) {
+        console.error('Error fetching payment data:', error);
+        document.getElementById('loader').style.display = 'none';
+        alert('Failed to load payment data');
+      }
+    }
+
+    // Call the function to fetch payment data
+    fetchPaymentData();
+
+    // Set up chart.js for order data (you can modify as needed)
+    const ctx = document.getElementById('orderChart').getContext('2d');
+    const orderChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        datasets: [{
+          label: 'Orders',
+          data: [10, 20, 30, 40, 50],
+          fill: false,
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        }]
+      }
+    });
+  </script>
+  <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration</title>
+  <link rel="stylesheet" href="./asset/Style/Register.css">
+</head>
+<body>
+
+  <div class="container">
+    <h2>Create an Account</h2>
+    <form id="registration-form">
+      <!-- User Details -->
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" required placeholder="Enter your full name">
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required placeholder="Enter your email">
+
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" required placeholder="Enter your phone number" pattern="[0-9]{10}" title="Phone number should be 10 digits" maxlength="10">
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required placeholder="Enter your password">
+
+      <label for="confirm-password">Confirm Password</label>
+      <input type="password" id="confirm-password" name="confirm-password" required placeholder="Confirm your password">
+
+      <!-- Restaurant Details -->
+      <label for="restaurant-name">Restaurant Name / Hotel Name</label>
+      <input type="text" id="restaurant-name" name="restaurant-name" required placeholder="Enter your restaurant or hotel name">
+
+      <!-- Address Fields -->
+      <label for="state">State</label>
+      <select id="state" name="state" required>
+        <option value="" disabled selected>Select your state</option>
+        <option value="Andhra Pradesh">Andhra Pradesh</option>
+        <option value="Bihar">Bihar</option>
+        <option value="Gujarat">Gujarat</option>
+        <!-- Other states omitted for brevity -->
+      </select>
+
+      <label for="district" id="district-label" style="display: none;">District</label>
+      <select id="district" name="district" style="display: none;" required>
+        <!-- District options will be populated dynamically -->
+      </select>
+      <div class="loading" id="loading">Loading districts...</div>
+
+      <label for="city" id="city-label" style="display: none;">City/Town</label>
+      <input type="text" id="city" name="city" style="display: none;" required placeholder="Enter your city or town">
+
+      <label for="pin-code" id="pin-code-label" style="display: none;">Pin Code</label>
+      <input type="text" id="pin-code" name="pin-code" style="display: none;" required placeholder="Enter your pin code" pattern="[0-9]{6}" title="Pin code should be 6 digits">
+
+      <button type="submit" class="btn-primary">Register</button>
+
+      <p>Already have an account? <a href="login.html" class="link">Login here</a></p>
+    </form>
+  </div>
+
+  <script>
+    // Define the getDistricts function to return districts based on the selected state
+    function getDistricts(state) {
+      const districtData = {
+        "Andhra Pradesh": ["Anantapur", "Chittoor", "East Godavari", "Guntur"],
+        "Bihar": ["Patna", "Gaya", "Bhagalpur"],
+        "Gujarat": ["Ahmedabad", "Surat", "Vadodara"]
+        // Add more states and districts as needed
+      };
+      return districtData[state] || [];
+    }
+  
+    // Event listener for the state selection
+    document.getElementById('state').addEventListener('change', function(event) {
+      const state = event.target.value;
+      const loading = document.getElementById('loading');
+      const districtSelect = document.getElementById('district');
+      const districtLabel = document.getElementById('district-label');
+      const city = document.getElementById('city');
+      const cityLabel = document.getElementById('city-label');
+      const pinCode = document.getElementById('pin-code');
+      const pinCodeLabel = document.getElementById('pin-code-label');
+      
+      loading.style.display = 'block';
+      districtSelect.style.display = 'none';
+      districtLabel.style.display = 'none';
+      city.style.display = 'none';
+      cityLabel.style.display = 'none';
+      pinCode.style.display = 'none';
+      pinCodeLabel.style.display = 'none';
+  
+      setTimeout(function() {
+        const districts = getDistricts(state);
+        districtSelect.innerHTML = '';
+  
+        districts.forEach(function(district) {
+          const option = document.createElement('option');
+          option.value = district;
+          option.textContent = district;
+          districtSelect.appendChild(option);
+        });
+  
+        loading.style.display = 'none';
+        districtSelect.style.display = 'block';
+        districtLabel.style.display = 'block';
+        city.style.display = 'block';
+        cityLabel.style.display = 'block';
+        pinCode.style.display = 'block';
+        pinCodeLabel.style.display = 'block';
+  
+        // Make city and pin code fields required only when they are visible
+        city.required = true;
+        pinCode.required = true;
+      }, 1000);
+    });
+  
+    document.getElementById('registration-form').addEventListener('submit', async function(event) {
+      event.preventDefault();
+  
+      const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        password: document.getElementById('password').value,
+        confirmPassword: document.getElementById('confirm-password').value,
+        restaurantName: document.getElementById('restaurant-name').value,
+        state: document.getElementById('state').value,
+        district: document.getElementById('district').value,
+        city: document.getElementById('city').value,
+        pinCode: document.getElementById('pin-code').value
+      };
+  
+      try {
+        const response = await fetch('http://localhost:5000/register', { // Removed /api
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+  
+        if (response.ok) {
+          const result = await response.json();
+          alert('Registration successful!');
+        } else {
+          const error = await response.json();
+          alert(`Registration failed: ${error.message}`);
+        }
+      } catch (error) {
+        alert(`Error: ${error.message}`);
+      }
+    });
+  </script>
+  
+  </body>
+</html>

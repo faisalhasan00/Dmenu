@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Restaurant Dashboard</title>
+  <link href="assets/img/favicon.png" rel="icon">
+  <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/vendor/bootstrap-icons/bootstrap-icons.css">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="index.html" class="logo d-flex align-items-center">
+        <img src="assets/img/logo.png" alt="Restaurant Logo">
+        <span class="d-none d-lg-block">Restaurant Dashboard</span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div>
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-bell"></i>
+            <span class="badge bg-primary badge-number" id="notification-badge">4</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications" id="notifications-list">
+            <li class="dropdown-header">
+              You have 4 new notifications
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li class="notification-item">
+              <i class="bi bi-info-circle text-primary"></i>
+              <div>
+                <h4>New Order</h4>
+                <p>A new order has been placed</p>
+                <p>10 mins ago</p>
+              </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link " href="Dashboard.html">
+          <i class="bi bi-grid"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="Order.html">
+          <i class="bi bi-receipt"></i><span>Orders</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="Menuediting.html">
+          <i class="bi bi-menu-button-wide"></i><span>Menu Management</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="Reports.html">
+          <i class="bi bi-bar-chart-line"></i><span>Reports</span>
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <main id="main" class="main">
+    <div class="pagetitle">
+      <h1>Dashboard</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="">Home</a></li>
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- Orders Received Section -->
+    <section class="section orders-received">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Orders Received</h5>
+          <ul id="ordersList" class="list-group">
+            <!-- Orders will be populated here -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard Cards Section -->
+    <section class="section dashboard">
+      <div class="row">
+        <!-- Today's Orders Card -->
+        <div class="col-lg-4 col-md-6">
+          <div class="card info-card">
+            <div class="card-body">
+              <h5 class="card-title">Today's Orders</h5>
+              <p><strong>Total Orders:</strong> <span id="totalOrders">0</span></p>
+              <p><strong>Completed Orders:</strong> <span id="completedOrders">0</span></p>
+              <p><strong>Pending Orders:</strong> <span id="pendingOrders">0</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; 2024 <strong><span>Restaurant Dashboard</span></strong>. All Rights Reserved
+    </div>
+  </footer>
+
+  <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    // Fetch and display orders every 1 second
+    document.addEventListener("DOMContentLoaded", () => {
+        setInterval(fetchOrders, 1000);  // Auto-refresh every 1 second
+    });
+
+    async function fetchOrders() {
+        try {
+            const response = await fetch('http://localhost:5000/api/payment');  // Fetch data from your API
+            const orders = await response.json();
+            displayOrders(orders);  // Display orders in the HTML
+        } catch (error) {
+            console.error("Error fetching orders:", error);
+        }
+    }
+
+    function getStatusClass(status) {
+      switch (status) {
+        case "Completed":
+          return "text-success";  // Green color for completed orders
+        case "Pending":
+          return "text-warning";  // Yellow color for pending orders
+        case "In Progress":
+          return "text-info";  // Blue color for orders in progress
+        default:
+          return "text-muted";  // Gray color for unknown statuses
+      }
+    }
+
+    function displayOrders(orders) {
+        const ordersList = document.getElementById("ordersList");
+        ordersList.innerHTML = ""; // Clear any existing content
+
+        orders.forEach(order => {
+            const listItem = document.createElement("li");
+            listItem.className = "list-group-item";
+            listItem.innerHTML = ` 
+                <strong>Order ID:</strong> ${order.orderId} <br>
+                <strong>Customer:</strong> ${order.name} <br>
+                <strong>Total:</strong> ₹${order.amount} <br>
+                <strong>Status:</strong> <span class="${getStatusClass(order.status)}">${order.status}</span> <br>
+            `;
+            ordersList.appendChild(listItem);
+        });
+
+        // Update the dashboard cards (e.g., total orders, completed orders)
+        document.getElementById("totalOrders").innerText = orders.length;
+        document.getElementById("completedOrders").innerText = orders.filter(o => o.status === "Completed").length;
+        document.getElementById("pendingOrders").innerText = orders.filter(o => o.status === "Pending").length;
+
+        // Update notification badge
+        const notificationBadge = document.getElementById('notification-badge');
+        notificationBadge.innerText = orders.filter(o => o.status === "Pending").length;
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Dashboard - Payment Management</title>
+    <!-- Fonts and Vendor Styles -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Nunito|Poppins" rel="stylesheet">
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
+    <style>
+        /* Styling for Payment Management */
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4A90E2;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #searchBox {
+            padding: 10px;
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .clear-search {
+            margin-left: 10px;
+            padding: 10px;
+            background-color: #ff6961;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        #ordersTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #ordersTable th, #ordersTable td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        #ordersTable th {
+            background-color: #f2f2f2;
+        }
+
+        .view-order-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .view-order-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Modal Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.5s;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover, .close:focus {
+            color: black;
+            cursor: pointer;
+        }
+
+        /* Loading Indicator Styling */
+        .loading-indicator {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #4A90E2;
+            display: none;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header and Sidebar -->
+    <header id="header" class="header fixed-top d-flex align-items-center">
+        <div class="d-flex align-items-center justify-content-between">
+            <a href="index.html" class="logo d-flex align-items-center">
+                <img src="assets/img/logo.png" alt="Restaurant Logo">
+                <span class="d-none d-lg-block">Restaurant Dashboard</span>
+            </a>
+            <i class="bi bi-list toggle-sidebar-btn"></i>
+        </div>
+    </header>
+
+    <aside id="sidebar" class="sidebar">
+        <ul class="sidebar-nav" id="sidebar-nav">
+            <li class="nav-item">
+                <a class="nav-link " href="Dashboard.html">
+                    <i class="bi bi-grid"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="Order.html">
+                    <i class="bi bi-receipt"></i><span>Orders</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="Order.html">
+                    <i class="bi bi-receipt"></i><span>Menu Management</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="Reports.html">
+                    <i class="bi bi-receipt"></i><span>Reports</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main" class="main">
+        <div class="pagetitle">
+            <h1>Payment Management</h1>
+        </div>
+
+        <!-- Search Box -->
+        <div class="search-container">
+            <input type="text" id="searchBox" placeholder="Search Payments..." onkeyup="filterOrders()" oninput="toggleClearButton()" />
+            <button class="clear-search" onclick="clearSearch()">Clear</button>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="loading-indicator">Loading payments...</div>
+
+        <!-- Payments Table -->
+        <div class="table-container">
+            <table id="ordersTable">
+                <thead>
+                    <tr>
+                        <th>Payment ID</th>
+                        <th>Order ID</th>
+                        <th>Amount</th>
+                        <th>Currency</th>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Modal for Payment Details -->
+        <div id="orderModal" class="modal" onclick="closeModal(event)">
+            <div class="modal-content" onclick="event.stopPropagation();">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h3>Payment Details</h3>
+                <div id="orderDetails"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // JavaScript for Payment Management
+        async function loadOrders() {
+            try {
+                document.getElementById('loadingIndicator').style.display = 'block';
+                const response = await fetch('http://localhost:5000/api/payment');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const orders = await response.json();
+                const tableBody = document.querySelector('#ordersTable tbody');
+                tableBody.innerHTML = '';  // Clear existing rows
+
+                orders.forEach(order => {
+                    const row = document.createElement('tr');
+                    const formattedDate = new Date(order.createdAt).toLocaleDateString();
+
+                    row.innerHTML = `
+                        <td>${order.paymentId}</td>
+                        <td>${order.orderId}</td>
+                        <td>${order.amount}</td>
+                        <td>${order.currency}</td>
+                        <td>${order.name}</td>
+                        <td>${formattedDate}</td>
+                        <td><button class="view-order-btn" onclick="viewOrder('${order._id}')">View Order</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching payments:', error);
+                alert('Failed to load payments. Please try again later.');
+            } finally {
+                document.getElementById('loadingIndicator').style.display = 'none';
+            }
+        }
+
+        function viewOrder(orderId) {
+            fetch(`http://localhost:5000/api/payment/${orderId}`)
+                .then(response => response.json())
+                .then(order => {
+                    const itemNames = order.items.map(item => item.name).join(', ');
+                    document.getElementById('orderDetails').innerHTML = `
+                        <p><strong>Payment ID:</strong> ${order.paymentId}</p>
+                        <p><strong>Order ID:</strong> ${order.orderId}</p>
+                        <p><strong>Amount:</strong> ₹${order.amount}</p>
+                        <p><strong>Currency:</strong> ${order.currency}</p>
+                        <p><strong>Name:</strong> ${order.name}</p>
+                        <p><strong>Table Number:</strong> ${order.items[0].tableNumber || 'N/A'}</p>
+                        <p><strong>Items:</strong> ${itemNames}</p>
+                        <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+                    `;
+                    document.getElementById('orderModal').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching payment details:', error);
+                    alert('Failed to load payment details.');
+                });
+        }
+
+        function closeModal(event) {
+            document.getElementById('orderModal').style.display = 'none';
+        }
+
+        function filterOrders() {
+            const searchValue = document.getElementById('searchBox').value.toLowerCase();
+            const rows = document.querySelectorAll('#ordersTable tbody tr');
+            rows.forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(searchValue) ? '' : 'none';
+            });
+        }
+
+        function toggleClearButton() {
+            document.querySelector('.clear-search').style.display = document.getElementById('searchBox').value ? 'inline' : 'none';
+        }
+
+        function clearSearch() {
+            document.getElementById('searchBox').value = '';
+            filterOrders();
+            toggleClearButton();
+        }
+
+        document.addEventListener('DOMContentLoaded', loadOrders);
+    </script>
+     <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
+     <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+     <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
+     <script src="assets/js/main.js"></script>
+</body>
+
+</html>

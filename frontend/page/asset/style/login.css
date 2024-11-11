@@ -1,0 +1,133 @@
+ /* Reset some default styles */
+ * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Set background color */
+body {
+    background-color: #8B4513; /* Dark Brown */
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Main login container */
+.container {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Heading styles */
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #FFFFFF; /* White text color */
+}
+
+/* Form styles */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-top: 10px;
+    color: #FFFFFF; /* White text color */
+}
+
+input {
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+input:focus {
+    border-color: #FFD700; /* Yellow border on focus */
+    outline: none;
+}
+
+/* Button styles */
+button {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #FFD700; /* Yellow button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #FFB600; /* Slightly darker yellow on hover */
+}
+
+/* Sign up prompt styles */
+p {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #FFFFFF; /* White text color */
+}
+
+a {
+    color: #FFD700; /* Yellow link */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Media Queries for responsiveness */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    input {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        width: 100%;
+        padding: 10px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    input {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    button {
+        font-size: 12px;
+        padding: 8px;
+    }
+}

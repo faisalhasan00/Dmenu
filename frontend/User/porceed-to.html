@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proceed to Checkout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./asset/Style/porceed-to.css">
+</head>
+<body>
+    <div class="checkout-container">
+        <h2>Proceed to Checkout</h2>
+        
+        <div class="item-summary" id="itemSummary">
+            <!-- Items will be dynamically inserted here -->
+        </div>
+        
+        <div class="platform-charge">
+            <span>Platform Charges: ₹0.50</span>
+            <label for="customCharge">Add a custom amount:</label>
+            <input type="number" id="customCharge" placeholder="Optional amount" min="0">
+        </div>
+
+        <div class="total" id="totalAmount">Total: ₹0.00</div>
+
+        <div class="user-info">
+            <label for="orderType">Order Type:</label>
+            <select id="orderType">
+                <option value="dine-in">Dine-in</option>
+                <option value="takeaway">Takeaway</option>
+            </select>
+
+            <div id="dineInFields" class="order-fields">
+                <label for="dineInName">Name:</label>
+                <input type="text" id="dineInName" placeholder="Enter your name" required>
+
+                <label for="tableNumber">Table Number:</label>
+                <input type="text" id="tableNumber" placeholder="Enter your table number" required>
+            </div>
+
+            <div id="takeawayFields" class="order-fields" style="display: none;">
+                <label for="takeawayName">Name:</label>
+                <input type="text" id="takeawayName" placeholder="Enter your name" required>
+
+                <label for="token">Token:</label>
+                <input type="text" id="token" placeholder="Generated token" readonly>
+            </div>
+        </div>
+
+        <button id="confirmOrderBtn">Confirm Order</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const itemSummary = document.getElementById("itemSummary");
+            const totalAmount = document.getElementById("totalAmount");
+            const confirmOrderBtn = document.getElementById("confirmOrderBtn");
+            const orderType = document.getElementById("orderType");
+            const dineInFields = document.getElementById("dineInFields");
+            const takeawayFields = document.getElementById("takeawayFields");
+            const tokenInput = document.getElementById("token");
+
+            // Load cart items from local storage
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            let total = 0;
+
+            cart.forEach(item => {
+                const itemElement = document.createElement("div");
+                itemElement.classList.add("item");
+                itemElement.innerHTML = `
+                    <span class="item-name">${item.name} (${item.quantity})</span>
+                    <span>₹${(item.price * item.quantity).toFixed(2)}</span>
+                `;
+                itemSummary.appendChild(itemElement);
+                total += item.price * item.quantity;
+            });
+
+            // Calculate initial total with platform fee
+            const platformFee = 0.50;
+            total += platformFee; // Add platform charge
+            totalAmount.innerText = `Total: ₹${total.toFixed(2)}`;
+
+            // Token generation for takeaway
+            function generateToken() {
+                return Math.floor(Math.random() * 1000000).toString(); // Random 6-digit token
+            }
+
+            // Show/hide fields based on order type
+            orderType.addEventListener("change", () => {
+                if (orderType.value === "dine-in") {
+                    dineInFields.style.display = "block";
+                    takeawayFields.style.display = "none";
+                } else {
+                    dineInFields.style.display = "none";
+                    takeawayFields.style.display = "block";
+                    tokenInput.value = generateToken(); // Generate token for takeaway
+                }
+            });
+
+            // Update total when custom charge is added
+            document.getElementById("customCharge").addEventListener("input", (e) => {
+                const customCharge = parseFloat(e.target.value) || 0;
+                const updatedTotal = total + customCharge;
+                totalAmount.innerText = `Total: ₹${updatedTotal.toFixed(2)}`;
+            });
+
+            // Confirm order button click handler
+            confirmOrderBtn.addEventListener("click", () => {
+                let name, tableNumber, token;
+                const customCharge = parseFloat(document.getElementById("customCharge").value) || 0;
+
+                if (orderType.value === "dine-in") {
+                    name = document.getElementById("dineInName").value;
+                    tableNumber = document.getElementById("tableNumber").value;
+                    token = "";
+                } else {
+                    name = document.getElementById("takeawayName").value;
+                    tableNumber = "";
+                    token = tokenInput.value;
+                }
+
+                if ((orderType.value === "dine-in" && name && tableNumber) || (orderType.value === "takeaway" && name)) {
+                    // Save order data in local storage for payment page retrieval
+                    const orderDetails = {
+                        name,
+                        tableNumber,
+                        token,
+                        orderType: orderType.value,
+                        customCharge,
+                        items: cart,
+                        total: total + customCharge
+                    };
+                    localStorage.setItem("orderDetails", JSON.stringify(orderDetails));
+
+                    alert(`Order confirmed! Thank you, ${name}\n${orderType.value === "dine-in" ? `Table: ${tableNumber}` : `Token: ${token}`}`);
+                    localStorage.removeItem("cart"); // Clear cart after confirmation
+                    window.location.href = "payment.html"; // Redirect to payment page
+                } else {
+                    alert("Please fill in all required fields.");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

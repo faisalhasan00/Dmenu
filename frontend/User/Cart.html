@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="./asset/Style/cart.css">
+</head>
+<body>
+    <div class="cart-container">
+        <h2>Your Cart</h2>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="cart-summary">
+            <h3>Cart Summary</h3>
+            <p>Total: ₹<span id="cartTotal">0.00</span></p>
+            <button id="checkoutBtn">Proceed to Checkout</button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const cartItemsContainer = document.getElementById("cartItems");
+            const cartTotal = document.getElementById("cartTotal");
+            const checkoutBtn = document.getElementById("checkoutBtn");
+
+            // Load cart data from local storage or initialize empty array
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+            function renderCart() {
+                cartItemsContainer.innerHTML = "";
+                let total = 0;
+
+                // If the cart is empty, display an empty message
+                if (cart.length === 0) {
+                    cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
+                    checkoutBtn.disabled = true;
+                } else {
+                    // Enable checkout button if cart has items
+                    checkoutBtn.disabled = false;
+
+                    cart.forEach(item => {
+                        const itemElement = document.createElement("div");
+                        itemElement.classList.add("cart-item");
+                        itemElement.innerHTML = `
+                            <div class="item-details">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-price">Price: ₹${item.price.toFixed(2)}</div>
+                            </div>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn decrease-btn" data-id="${item.id}">-</button>
+                                <span>${item.quantity}</span>
+                                <button class="quantity-btn increase-btn" data-id="${item.id}">+</button>
+                            </div>
+                            <button class="remove-btn" data-id="${item.id}">Remove</button>
+                        `;
+                        cartItemsContainer.appendChild(itemElement);
+                        total += item.price * item.quantity;
+                    });
+                }
+
+                cartTotal.innerText = total.toFixed(2);
+                attachEventListeners();
+            }
+
+            function attachEventListeners() {
+                const increaseBtns = document.querySelectorAll(".increase-btn");
+                const decreaseBtns = document.querySelectorAll(".decrease-btn");
+                const removeBtns = document.querySelectorAll(".remove-btn");
+
+                increaseBtns.forEach(button => {
+                    button.addEventListener("click", () => {
+                        const id = parseInt(button.getAttribute("data-id"));
+                        changeQuantity(id, 1);
+                    });
+                });
+
+                decreaseBtns.forEach(button => {
+                    button.addEventListener("click", () => {
+                        const id = parseInt(button.getAttribute("data-id"));
+                        changeQuantity(id, -1);
+                    });
+                });
+
+                removeBtns.forEach(button => {
+                    button.addEventListener("click", () => {
+                        const id = parseInt(button.getAttribute("data-id"));
+                        removeItem(id);
+                    });
+                });
+            }
+
+            // Redirect to proceed-to.html when checkout button is clicked
+            checkoutBtn.addEventListener("click", () => {
+                window.location.href = "porceed-to.html";
+            });
+
+            function changeQuantity(id, delta) {
+                const item = cart.find(item => item.id === id);
+                if (!item) return;
+
+                item.quantity += delta;
+
+                // Ensure the quantity does not go below 1
+                if (item.quantity < 1) {
+                    item.quantity = 1; // Prevent going below 1
+                }
+
+                saveCart();
+                renderCart();
+            }
+
+            function removeItem(id) {
+                cart = cart.filter(item => item.id !== id);
+                saveCart();
+                renderCart();
+            }
+
+            function saveCart() {
+                localStorage.setItem("cart", JSON.stringify(cart));
+            }
+
+            renderCart();
+        });
+    </script>
+</body>
+</html>

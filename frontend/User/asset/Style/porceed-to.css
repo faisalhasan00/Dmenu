@@ -1,0 +1,120 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #1c1c1c; /* Dark charcoal background */
+}
+
+.checkout-container {
+    width: 90%;
+    max-width: 600px;
+    background-color: #fff; /* White background for the container */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+    color: #333; /* Dark text for readability */
+    transition: all 0.3s ease; /* Smooth transitions */
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #FFC107; /* Bright yellow for heading */
+}
+
+.item-summary {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 1rem;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.item-name {
+    font-weight: bold;
+}
+
+.total {
+    font-size: 1.2rem;
+    text-align: right;
+    margin-top: 10px;
+    color: #FFC107; /* Bright yellow for total */
+}
+
+.user-info {
+    margin-top: 1.5rem;
+}
+
+.user-info label {
+    display: block;
+    margin: 10px 0 5px;
+    color: #FFC107; /* Bright yellow for labels */
+}
+
+.user-info input, .user-info select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f8f8f8; /* Light gray background for inputs */
+    color: #333;
+    transition: border 0.3s ease;
+}
+
+.user-info input:focus, .user-info select:focus {
+    border-color: #FFC107; /* Yellow border on focus */
+}
+
+#confirmOrderBtn {
+    margin-top: 20px;
+    padding: 12px 20px;
+    width: 100%;
+    border: none;
+    background-color: #FFC107; /* Bright yellow for button */
+    color: #1c1c1c; /* Dark text on yellow button */
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background 0.3s ease;
+}
+
+#confirmOrderBtn:hover {
+    background-color: #e0a800; /* Darker yellow on hover */
+}
+
+.platform-charge {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    color: #FFC107; /* Bright yellow for platform charge */
+}
+
+.platform-charge span {
+    margin-bottom: 5px;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+    .checkout-container {
+        padding: 15px;
+    }
+
+    .item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

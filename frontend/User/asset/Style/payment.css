@@ -1,0 +1,62 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #2e2e2e; /* Dark charcoal background */
+    color: #f7f700; /* Bright yellow text */
+}
+
+.payment-container {
+    width: 90%;
+    max-width: 600px;
+    background-color: #3c3c3c; /* Slightly lighter charcoal for the container */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #f7f700; /* Bright yellow for heading */
+}
+
+.total {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-top: 20px;
+    color: #f7f700; /* Bright yellow for total */
+}
+
+#payNowBtn {
+    margin-top: 20px;
+    padding: 12px 20px;
+    width: 100%;
+    border: none;
+    background-color: #f7f700; /* Bright yellow for button */
+    color: #2e2e2e; /* Dark charcoal text on yellow button */
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background 0.3s ease;
+}
+
+#payNowBtn:hover {
+    background-color: #e6e600; /* Slightly darker yellow on hover */
+}
+#loadingIndicator {
+    display: none;
+    margin-top: 10px;
+    font-size: 16px;
+    color: #F37254;
+}
