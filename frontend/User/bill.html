@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill Summary</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./asset/Style/bill.css">
+    <style>
+        
+    </style>
+</head>
+<body>
+    <div class="bill-container">
+        <h2>Bill Summary</h2>
+        <div id="billDetails"></div>
+        <button id="printBillBtn">Print Bill</button>
+        <button id="goHomeBtn">Go Home</button>
+        <div id="alertMessage" class="alert" style="display:none;"></div> <!-- Alert for missing order details -->
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Fetch the order details from local storage
+            const orderDetails = JSON.parse(localStorage.getItem("orderDetails"));
+            const billDetailsDiv = document.getElementById("billDetails");
+            const alertMessage = document.getElementById("alertMessage");
+
+            if (orderDetails) {
+                // Check if order type is 'dine-in' or 'takeaway' and set the tableNumber or token
+                let orderTypeDetails = '';
+                if (orderDetails.orderType === 'dine-in') {
+                    orderTypeDetails = `<p><strong>Table Number:</strong> ${orderDetails.tableNumber}</p>`;
+                } else if (orderDetails.orderType === 'takeaway') {
+                    orderTypeDetails = `<p><strong>Token Number:</strong> ${orderDetails.token}</p>`;
+                }
+
+                // Generate bill content
+                const billContent = `
+                    <h3>Order ID: ${orderDetails.orderId}</h3>
+                    <p><strong>Name:</strong> ${orderDetails.name}</p>
+                    <p><strong>Total Amount:</strong> ₹${orderDetails.total.toFixed(2)}</p>
+                    ${orderTypeDetails} <!-- Display Table/Token number -->
+                    <p><strong>Payment ID:</strong> ${orderDetails.paymentId || "Not available"}</p>
+                    <p><strong>Payment Method:</strong> ${orderDetails.paymentMethod || "Not available"}</p>
+                    <h4>Items Ordered:</h4>
+                    <ul>
+                        ${orderDetails.items.map(item => `
+                            <li>${item.name} - Qty: ${item.quantity} <span class="item-price">₹${item.price.toFixed(2)}</span></li>
+                        `).join('')}
+                    </ul>
+                `;
+                billDetailsDiv.innerHTML = billContent;
+            } else {
+                // Show an alert if order details are not found
+                alertMessage.style.display = "block";
+                alertMessage.innerText = "No order details found. Please check your payment status or contact support.";
+            }
+
+            // Print bill button functionality
+            document.getElementById("printBillBtn").addEventListener("click", () => {
+                window.print();
+            });
+
+            // Go home button functionality
+            document.getElementById("goHomeBtn").addEventListener("click", () => {
+                window.location.href = "Menu.html"; // Redirect to the home page
+            });
+        });
+    </script>
+</body>
+</html>

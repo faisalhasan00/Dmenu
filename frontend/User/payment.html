@@ -6,73 +6,64 @@
     <title>Payment Page</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./asset/Style/payment.css">
-    <style>
-        
-    </style>
 </head>
 <body>
     <div class="payment-container">
         <h2>Payment</h2>
         <div class="total" id="totalAmount">Total: ₹0.00</div>
         <button id="payNowBtn">Pay Now</button>
-        <div id="loadingIndicator">Processing your payment...</div>
+        <div id="loadingIndicator" style="display: none;">Processing your payment...</div>
     </div>
 
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Fetch the order details from local storage
             const orderDetails = JSON.parse(localStorage.getItem("orderDetails"));
             const totalAmount = document.getElementById("totalAmount");
             const payNowBtn = document.getElementById("payNowBtn");
             const loadingIndicator = document.getElementById("loadingIndicator");
 
-            // Generate and store orderId if not present
             if (orderDetails && !orderDetails.orderId) {
-                orderDetails.orderId = "ORD" + new Date().getTime();  // Generate a unique orderId based on timestamp
-                localStorage.setItem("orderDetails", JSON.stringify(orderDetails)); // Store the updated details
+                orderDetails.orderId = "ORD" + new Date().getTime();
+                localStorage.setItem("orderDetails", JSON.stringify(orderDetails));
             }
 
-            // Display the total amount if order details are found
             if (orderDetails) {
                 totalAmount.innerText = `Total: ₹${orderDetails.total.toFixed(2)}`;
             } else {
                 alert("No order details found. Please try again.");
-                window.location.href = "index.html"; // Redirect to home if no order details
-                return; // Exit the script
+                window.location.href = "index.html";
+                return;
             }
 
             payNowBtn.addEventListener("click", () => {
                 const options = {
-                    key: "rzp_test_pDU9YNOEb6xH2F", // Replace with your actual Razorpay key id
-                    amount: orderDetails.total * 100, // Amount in paise
+                    key: "rzp_test_pDU9YNOEb6xH2F",
+                    amount: orderDetails.total * 100,
                     currency: "INR",
                     name: "Your Company Name",
                     description: "Order Payment",
-                    image: "https://example.com/your_logo.jpg", // Replace with your logo URL
+                    image: "https://example.com/your_logo.jpg",
                     handler: function (response) {
-                        loadingIndicator.style.display = "none"; 
+                        loadingIndicator.style.display = "none";
                         alert(`Payment successful! Payment ID: ${response.razorpay_payment_id}`);
 
-                        // Prepare payment data to send to the server
                         const paymentData = {
                             paymentId: response.razorpay_payment_id,
-                            orderId: orderDetails.orderId, 
+                            orderId: orderDetails.orderId,
                             amount: orderDetails.total,
                             currency: "INR",
                             name: orderDetails.name,
                             items: orderDetails.items,
-                            tableNumber: orderDetails.tableNumber || "",  // Include table number
-                            token: orderDetails.token || "" // Include token
+                            tableNumber: orderDetails.tableNumber || "",
+                            token: orderDetails.token || ""
                         };
 
-                        // Store payment data in localStorage
                         orderDetails.paymentId = response.razorpay_payment_id;
-                        orderDetails.paymentMethod = "UPI"; // Can be dynamically set depending on the payment method
+                        orderDetails.paymentMethod = "UPI";
                         localStorage.setItem("orderDetails", JSON.stringify(orderDetails));
 
-                        // Send the payment data to the backend
-                        fetch('http://localhost:5000/api/payment', { // Update with your backend URL
+                        fetch('http://localhost:5000/api/payment', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -86,11 +77,11 @@
                             return res.json();
                         })
                         .then(data => {
-                            console.log('Success:', data);
-                            window.location.href = "bill.html"; // Redirect to bill generation page
+                            console.log('Payment data sent successfully:', data);
+                            window.location.href = "bill.html";
                         })
                         .catch((error) => {
-                            console.error('Error:', error);
+                            console.error('Error sending payment data:', error);
                             alert('Failed to process payment. Please try again.');
                         });
                     },
@@ -107,12 +98,12 @@
                     }
                 };
 
-                loadingIndicator.style.display = "block"; // Show loading indicator
+                loadingIndicator.style.display = "block";
                 const razorpay = new Razorpay(options);
                 razorpay.open();
 
                 razorpay.on('payment.failed', (response) => {
-                    loadingIndicator.style.display = "none"; 
+                    loadingIndicator.style.display = "none";
                     alert('Payment failed. Please try again.');
                 });
             });

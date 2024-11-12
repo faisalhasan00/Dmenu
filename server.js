@@ -14,9 +14,10 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // MongoDB Connection URI
-const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://mohammedfaislahasan:OP8iTmP8ufeoub1J@digim1.bqdmo.mongodb.net/Restaurant?retryWrites=true&w=majority';
+const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://<username>:<password>@cluster.mongodb.net/Restaurant?retryWrites=true&w=majority';
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected successfully'))
   .catch(err => console.error('MongoDB connection error:', err));
@@ -46,10 +47,23 @@ const hotelSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
 });
 
+const paymentSchema = new mongoose.Schema({
+  paymentId: { type: String, required: true },
+  orderId: { type: String, required: true },
+  amount: { type: Number, required: true },
+  currency: { type: String, required: true },
+  name: { type: String, required: true },
+  items: { type: Array, required: true },
+  tableNumber: String,
+  token: String,
+  paymentMethod: String,
+});
+
 // Create models
-const RestaurantDetails = mongoose.model('RestaurantDetails', restaurantDetailsSchema, 'RestaurantDetails');
-const MenuItem = mongoose.model('Menu', menuItemSchema, 'Menu');
+const RestaurantDetails = mongoose.model('RestaurantDetails', restaurantDetailsSchema);
+const MenuItem = mongoose.model('Menu', menuItemSchema);
 const Hotel = mongoose.model('Hotel', hotelSchema);
+const Payment = mongoose.model('Payment', paymentSchema);  // New payment model
 
 // Routes
 
@@ -60,17 +74,6 @@ app.get('/api/restaurant', async (req, res) => {
     res.json(restaurant);
   } catch (error) {
     console.error('Error fetching restaurant:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
-
-// Fetch menu items
-app.get('/api/menu', async (req, res) => {
-  try {
-    const menuItems = await MenuItem.find();
-    res.json(menuItems);
-  } catch (error) {
-    console.error('Error fetching menu items:', error);
     res.status(500).send('Internal Server Error');
   }
 });
@@ -88,6 +91,10 @@ app.get('/api/orders', (req, res) => {
 app.post('/register', async (req, res) => {
   const { name, mobile, hotelName, password, city, state, zip, email } = req.body;
 
+  if (!name || !mobile || !hotelName || !password || !city || !state || !zip || !email) {
+    return res.status(400).json({ message: 'All fields are required.' });
+  }
+
   try {
     const existingHotel = await Hotel.findOne({ $or: [{ email }, { mobile }] });
     if (existingHotel) {
@@ -95,7 +102,6 @@ app.post('/register', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const newHotel = new Hotel({
       name,
       mobile,
@@ -119,6 +125,10 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
   const { mobile, password } = req.body;
 
+  if (!mobile || !password) {
+    return res.status(400).json({ message: 'Both mobile and password are required.' });
+  }
+
   try {
     const hotel = await Hotel.findOne({ mobile });
     if (!hotel) {
@@ -134,6 +144,31 @@ app.post('/login', async (req, res) => {
   } catch (error) {
     console.error("Error logging in:", error);
     res.status(500).json({ message: 'Error logging in', error });
+  }
+});
+
+// Payment route to handle Razorpay payment data
+app.post('/api/payment', async (req, res) => {
+  const { paymentId, orderId, amount, currency, name, items, tableNumber, token } = req.body;
+
+  try {
+    const payment = new Payment({
+      paymentId,
+      orderId,
+      amount,
+      currency,
+      name,
+      items,
+      tableNumber,
+      token,
+      paymentMethod: "UPI" // Hardcoded for now, you may update as needed
+    });
+
+    await payment.save();
+    res.status(201).json({ message: 'Payment data saved successfully!' });
+  } catch (error) {
+    console.error("Error saving payment data:", error);
+    res.status(500).json({ message: 'Error saving payment data', error });
   }
 });
 
