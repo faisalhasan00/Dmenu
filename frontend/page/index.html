@@ -7,213 +7,6 @@
     <title>Get Virtual Menu QR Code for Restaurant: Contact Us, eMenu</title>
     <link rel="stylesheet" href="./asset/Style/index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        /* Basic styling */
-        .menu {
-            display: none;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .menu.active {
-            display: block;
-        }
-
-        .toggle-btn {
-            cursor: pointer;
-            background-color: transparent;
-            border: none;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .toggle-btn span {
-            width: 30px;
-            height: 4px;
-            background-color: #000;
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background-color: #333;
-            color: white;
-        }
-
-        .navbar .company-name {
-            font-size: 24px;
-        }
-
-        .menu li {
-            margin: 10px 0;
-        }
-
-        .menu li a {
-            text-decoration: none;
-            color: white;
-            padding: 10px;
-        }
-
-        .menu li a:hover {
-            background-color: #555;
-        }
-
-        /* Engagement Section */
-        .engagement-section {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .engagement-btn {
-            padding: 10px 20px;
-            margin: 5px;
-            background-color: #555;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        /* Features Section */
-        .features-section {
-            text-align: center;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-
-        .features-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .feature-item {
-            padding: 15px;
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-
-        .feature-item .feature-icon {
-            font-size: 40px;
-            margin-bottom: 10px;
-        }
-
-        /* Team Section */
-        .team-section {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .team-members {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .team-member {
-            background-color: #fff;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .team-member img {
-            width: 100%;
-            border-radius: 50%;
-        }
-
-        .team-member .social-icons a {
-            font-size: 18px;
-            margin: 5px;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            width: 300px;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        /* FAQ Section */
-        .faq-section {
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-
-        .faq-question {
-            background-color: #eee;
-            padding: 10px;
-            border: none;
-            width: 100%;
-            text-align: left;
-            cursor: pointer;
-        }
-
-        .faq-answer {
-            padding: 10px;
-            display: none;
-            background-color: #fff;
-        }
-
-        .faq-item {
-            margin-bottom: 10px;
-        }
-
-        /* Footer */
-        .footer {
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .footer-links ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .footer-links ul li a {
-            text-decoration: none;
-            color: white;
-        }
-
-        .footer-bottom {
-            margin-top: 20px;
-        }
-
-    </style>
 </head>
 
 <body>
@@ -312,7 +105,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- FAQ Section -->
     <div class="faq-section">
@@ -344,6 +137,11 @@
         </div>
     </footer>
 
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/11234567890" target="_blank" id="whatsapp-button">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
     <!-- Login Modal -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
@@ -354,29 +152,35 @@
                 <input type="text" id="username" name="username"><br>
                 <label for="password">Password:</label><br>
                 <input type="password" id="password" name="password"><br><br>
-                <button type="submit">Submit</button>
+                <button type="submit">Login</button>
             </form>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+
     <script>
+        // Toggle Menu
         function toggleMenu() {
-            document.querySelector('.menu').classList.toggle('active');
+            const menu = document.querySelector(".menu");
+            menu.classList.toggle("active");
+            const overlay = document.querySelector(".overlay");
+            overlay.classList.toggle("active");
         }
 
-        function toggleFAQ(faqId) {
-            var faqAnswer = document.getElementById('faq' + faqId);
-            faqAnswer.style.display = faqAnswer.style.display === 'block' ? 'none' : 'block';
+        // Toggle FAQ Answers
+        function toggleFAQ(faqNumber) {
+            const faq = document.getElementById("faq" + faqNumber);
+            faq.classList.toggle("active");
         }
 
-        function openModal() {
-            document.getElementById('loginModal').classList.add('active');
-        }
-
+        // Close Modal
         function closeModal() {
-            document.getElementById('loginModal').classList.remove('active');
+            const modal = document.getElementById("loginModal");
+            modal.style.display = "none";
         }
     </script>
+
 </body>
 
 </html>
