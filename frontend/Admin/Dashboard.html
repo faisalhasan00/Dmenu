@@ -183,6 +183,19 @@
         notificationBadge.innerText = orders.filter(o => o.status === "Pending").length;
     }
   </script>
+  <script>
+    function saveSettings() {
+        const siteName = document.getElementById('site-name').value;
+        const siteDescription = document.getElementById('site-description').value;
+        
+        if (siteName === "" || siteDescription === "") {
+            alert("Please fill in all fields.");
+            return;
+        }
+        
+        alert("Settings saved!");
+    }
+</script>
 </body>
 
 </html>
