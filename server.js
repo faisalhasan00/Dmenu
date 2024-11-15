@@ -4,15 +4,17 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const path = require('path'); // Import the path module
-const menuRoutes = require('./backend/routes/menuRoute'); // Adjust path if necessary
+const path = require('path');
+const qrcode = require('qrcode'); // Import the qrcode package
+const Joi = require('joi');
+const menuRoutes = require('./backend/routes/menuRoute');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET;
 const MONGODB_URI = process.env.MONGODB_URI || 'your_default_mongo_uri';
 
-// Check environment variables
+// Validate environment variables
 if (!JWT_SECRET) {
     console.error("Error: Missing JWT_SECRET in environment variables.");
     process.exit(1);
@@ -30,11 +32,11 @@ mongoose.connect(MONGODB_URI, {
 .then(() => console.log("MongoDB connected"))
 .catch((err) => console.error("MongoDB connection error:", err));
 
-// Configure CORS once with all necessary origins
+// Configure CORS
 const corsOptions = {
-  origin: ['http://localhost:3000', 'http://127.0.0.1:5500', 'http://127.0.0.1:5501'],
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
+    origin: ['http://localhost:3000', 'http://127.0.0.1:5500', 'http://127.0.0.1:5501'],
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 };
 app.use(cors(corsOptions));
 
@@ -52,7 +54,7 @@ const userSchema = new mongoose.Schema({
     state: { type: String, required: true },
     district: { type: String, required: true },
     city: { type: String, required: true },
-    pincode: { type: String, required: true }
+    pincode: { type: String, required: true },
 });
 const User = mongoose.model("User", userSchema);
 
@@ -71,38 +73,38 @@ const Payment = mongoose.model('Payment', paymentSchema);
 
 // JWT Authentication Middleware
 const authenticateJWT = (req, res, next) => {
-    const token = req.headers['authorization'];
-    if (token) {
-        jwt.verify(token, JWT_SECRET, (err, user) => {
-            if (err) {
-                return res.sendStatus(403); // Forbidden
-            }
-            req.user = user;
-            next();
-        });
-    } else {
-        res.sendStatus(401); // Unauthorized
-    }
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'Unauthorized' });
+
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ error: 'Invalid token' });
+        req.user = user;
+        next();
+    });
 };
+
+// Validation Schema for Registration
+const registerSchema = Joi.object({
+    fullname: Joi.string().required(),
+    email: Joi.string().email().required(),
+    phone: Joi.string().required(),
+    password: Joi.string().min(6).required(),
+    confirmPassword: Joi.string().valid(Joi.ref('password')).required(),
+    restaurantName: Joi.string().required(),
+    state: Joi.string().required(),
+    district: Joi.string().required(),
+    city: Joi.string().required(),
+    pincode: Joi.string().required(),
+});
 
 // Register Route
 app.post('/register', async (req, res) => {
-    const {
-        fullname,
-        email,
-        phone,
-        password,
-        confirmPassword,
-        restaurantName,
-        state,
-        district,
-        city,
-        pincode
-    } = req.body;
-
-    if (password !== confirmPassword) {
-        return res.status(400).json({ error: "Passwords do not match" });
+    const { error } = registerSchema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ error: error.details[0].message });
     }
+
+    const { fullname, email, phone, password, restaurantName, state, district, city, pincode } = req.body;
 
     try {
         const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
@@ -120,7 +122,7 @@ app.post('/register', async (req, res) => {
             state,
             district,
             city,
-            pincode
+            pincode,
         });
 
         await user.save();
@@ -136,22 +138,17 @@ app.post('/login', async (req, res) => {
     const { phone, password } = req.body;
 
     try {
-        // Find user by phone number
         const user = await User.findOne({ phone });
         if (!user) {
             return res.status(400).json({ error: "User not found" });
         }
 
-        // Compare password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ error: "Invalid credentials" });
         }
 
-        // Create JWT token
         const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
-
-        // Send response with token
         res.status(200).json({ message: "Login successful", token });
     } catch (err) {
         console.error("Error during login:", err);
@@ -159,12 +156,9 @@ app.post('/login', async (req, res) => {
     }
 });
 
-
-
 // Dashboard Route
 app.get('/frontend/admin/Dashboard', authenticateJWT, (req, res) => {
-    // Ensure the path is correctly pointing to the HTML file
-    res.sendFile(path.join(__dirname, 'Admin', 'Dashboard.html'));  // Corrected path
+    res.sendFile(path.join(__dirname, 'frontend', 'Admin', 'Dashboard.html'));
 });
 
 // Payment Route
@@ -191,10 +185,28 @@ app.post('/api/payment', async (req, res) => {
     }
 });
 
+// QR Code Generation Route
+app.get('/api/qr-code', async (req, res) => {
+    try {
+        const url = `http://localhost:${PORT}/User/Menu.html`; // Change this to your actual URL
+        const qrCode = await qrcode.toDataURL(url);
+        res.status(200).json({ qrCode });
+    } catch (err) {
+        console.error('Error generating QR code:', err);
+        res.status(500).json({ message: 'Error generating QR code', err });
+    }
+});
+
 // Use menu routes
 app.use('/api/menu', menuRoutes);
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Internal Server Error' });
+});
+
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });

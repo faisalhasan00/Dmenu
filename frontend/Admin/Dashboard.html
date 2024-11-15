@@ -17,7 +17,7 @@
   <header id="header" class="header fixed-top d-flex align-items-center">
     <div class="d-flex align-items-center justify-content-between">
       <a href="index.html" class="logo d-flex align-items-center">
-        <img src="assets/img/logo.png" alt="Restaurant Logo">
+        <!-- <img src="assets/img/logo.png" alt="Restaurant Logo"> -->
         <span class="d-none d-lg-block">Restaurant Dashboard</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
@@ -87,6 +87,17 @@
       </nav>
     </div>
 
+    <!-- QR Code Section -->
+    <section class="section qr-code">
+      <div class="card">
+        <div class="card-body text-center">
+          <h5 class="card-title">Scan to Access Menu</h5>
+          <img id="qrCode" alt="QR Code" src="" />
+          <p class="text-muted">Scan this QR code to view and order from the menu.</p>
+        </div>
+      </div>
+    </section>
+
     <!-- Orders Received Section -->
     <section class="section orders-received">
       <div class="card">
@@ -99,23 +110,6 @@
       </div>
     </section>
 
-    <!-- Dashboard Cards Section -->
-    <section class="section dashboard">
-      <div class="row">
-        <!-- Today's Orders Card -->
-        <div class="col-lg-4 col-md-6">
-          <div class="card info-card">
-            <div class="card-body">
-              <h5 class="card-title">Today's Orders</h5>
-              <p><strong>Total Orders:</strong> <span id="totalOrders">0</span></p>
-              <p><strong>Completed Orders:</strong> <span id="completedOrders">0</span></p>
-              <p><strong>Pending Orders:</strong> <span id="pendingOrders">0</span></p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
   </main>
 
   <footer id="footer" class="footer">
@@ -124,24 +118,30 @@
     </div>
   </footer>
 
-  <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
   <script src="assets/js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
   <script>
+    // Generate QR Code
+    const qr = new QRious({
+      element: document.getElementById('qrCode'),
+      value: 'http://127.0.0.1:5500/frontend/User/Menu.html', // Localhost Menu URL
+      size: 150
+    });
+
     // Fetch and display orders every 1 second
     document.addEventListener("DOMContentLoaded", () => {
-        setInterval(fetchOrders, 1000);  // Auto-refresh every 1 second
+      setInterval(fetchOrders, 1000);  // Auto-refresh every 1 second
     });
 
     async function fetchOrders() {
-        try {
-            const response = await fetch('http://localhost:5000/api/payment');  // Fetch data from your API
-            const orders = await response.json();
-            displayOrders(orders);  // Display orders in the HTML
-        } catch (error) {
-            console.error("Error fetching orders:", error);
-        }
+      try {
+        const response = await fetch('http://localhost:5000/api/payment');  // Fetch data from your API
+        const orders = await response.json();
+        displayOrders(orders);  // Display orders in the HTML
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
     }
 
     function getStatusClass(status) {
@@ -158,44 +158,22 @@
     }
 
     function displayOrders(orders) {
-        const ordersList = document.getElementById("ordersList");
-        ordersList.innerHTML = ""; // Clear any existing content
+      const ordersList = document.getElementById("ordersList");
+      ordersList.innerHTML = ""; // Clear any existing content
 
-        orders.forEach(order => {
-            const listItem = document.createElement("li");
-            listItem.className = "list-group-item";
-            listItem.innerHTML = ` 
-                <strong>Order ID:</strong> ${order.orderId} <br>
-                <strong>Customer:</strong> ${order.name} <br>
-                <strong>Total:</strong> ₹${order.amount} <br>
-                <strong>Status:</strong> <span class="${getStatusClass(order.status)}">${order.status}</span> <br>
-            `;
-            ordersList.appendChild(listItem);
-        });
-
-        // Update the dashboard cards (e.g., total orders, completed orders)
-        document.getElementById("totalOrders").innerText = orders.length;
-        document.getElementById("completedOrders").innerText = orders.filter(o => o.status === "Completed").length;
-        document.getElementById("pendingOrders").innerText = orders.filter(o => o.status === "Pending").length;
-
-        // Update notification badge
-        const notificationBadge = document.getElementById('notification-badge');
-        notificationBadge.innerText = orders.filter(o => o.status === "Pending").length;
+      orders.forEach(order => {
+        const listItem = document.createElement("li");
+        listItem.className = "list-group-item";
+        listItem.innerHTML = ` 
+          <strong>Order ID:</strong> ${order.orderId} <br>
+          <strong>Customer:</strong> ${order.name} <br>
+          <strong>Total:</strong> ₹${order.amount} <br>
+          <strong>Status:</strong> <span class="${getStatusClass(order.status)}">${order.status}</span> <br>
+        `;
+        ordersList.appendChild(listItem);
+      });
     }
   </script>
-  <script>
-    function saveSettings() {
-        const siteName = document.getElementById('site-name').value;
-        const siteDescription = document.getElementById('site-description').value;
-        
-        if (siteName === "" || siteDescription === "") {
-            alert("Please fill in all fields.");
-            return;
-        }
-        
-        alert("Settings saved!");
-    }
-</script>
 </body>
 
 </html>
