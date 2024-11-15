@@ -1,154 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registration</title>
-  <link rel="stylesheet" href="./asset/Style/Register.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register and Login</title>
+
+    <style>
+        /* Basic styling */
+        body { 
+            font-family: Arial, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            background-color: #f4f7fa; 
+        }
+        .form-container { 
+            max-width: 400px; 
+            width: 100%; 
+            padding: 20px; 
+            border: 1px solid #ccc; 
+            border-radius: 8px; 
+            background-color: #fff; 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group { 
+            margin: 15px 0; 
+        }
+        .form-group input, 
+        .form-group select { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box;
+        }
+        .form-group button { 
+            width: 100%; 
+            padding: 10px; 
+            background-color: #007bff; 
+            color: #fff; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        }
+        .form-group button:hover { 
+            background-color: #0056b3; 
+        }
+        .form-group a {
+            text-align: center;
+            display: block;
+            margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .form-group a:hover {
+            text-decoration: underline;
+        }
+        .loading {
+            text-align: center;
+            font-size: 16px;
+            color: #007bff;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="container">
-    <h2>Create an Account</h2>
-    <form id="registration-form">
-      <label for="name">Full Name</label>
-      <input type="text" id="name" name="name" required placeholder="Enter your full name">
+<div class="form-container" id="register-container">
+    <h2>Register</h2>
+    <div class="form-group"><input type="text" id="fullname" placeholder="Full Name" required></div>
+    <div class="form-group"><input type="email" id="email" placeholder="Email" required></div>
+    <div class="form-group"><input type="tel" id="phone" placeholder="Phone Number" required></div>
+    <div class="form-group"><input type="password" id="password" placeholder="Password" required></div>
+    <div class="form-group"><input type="password" id="confirmPassword" placeholder="Confirm Password" required></div>
+    <div class="form-group"><input type="text" id="restaurantName" placeholder="Restaurant/Hotel Name" required></div>
+    <div class="form-group">
+        <select id="state" onchange="loadDistricts()" required>
+            <option value="">Select State</option>
+            <option value="Bihar">Bihar</option>
+            <option value="Telangana">Telangana</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <select id="district" required>
+            <option value="">Select District</option>
+        </select>
+    </div>
+    <div class="form-group"><input type="text" id="city" placeholder="City/Town" required></div>
+    <div class="form-group"><input type="text" id="pincode" placeholder="Pin Code" required></div>
+    <div class="form-group"><button type="button" onclick="register()">Register</button></div>
+    <div class="form-group"><a href="javascript:void(0)" onclick="toggleForms()">Already a user? Login</a></div>
+</div>
 
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" required placeholder="Enter your email">
+<div class="form-container" id="login-container" style="display: none;">
+    <h2>Login</h2>
+    <div class="form-group"><input type="tel" id="login-phone" placeholder="Phone Number" required></div>
+    <div class="form-group"><input type="password" id="login-password" placeholder="Password" required></div>
+    <div class="form-group"><button type="button" onclick="login()">Login</button></div>
+    <div class="form-group"><a href="javascript:void(0)" onclick="toggleForms()">New user? Register</a></div>
+</div>
 
-      <label for="phone">Phone Number</label>
-      <input type="tel" id="phone" name="phone" required placeholder="Enter your phone number" pattern="[0-9]{10}" title="Phone number should be 10 digits" maxlength="10">
+<script>
+    // Predefined state and district mapping
+    const stateDistrictMap = {
+        "Bihar": ["Darbhanga", "Muzaffarpur", "Purnia"],
+        "Telangana": ["Abcd", "RangaReddy"]
+    };
 
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" required placeholder="Enter your password">
-
-      <label for="confirm-password">Confirm Password</label>
-      <input type="password" id="confirm-password" name="confirm-password" required placeholder="Confirm your password">
-
-      <label for="restaurant-name">Restaurant Name / Hotel Name</label>
-      <input type="text" id="restaurant-name" name="restaurantName" required placeholder="Enter your restaurant or hotel name">
-
-      <label for="state">State</label>
-      <select id="state" name="state" required>
-        <option value="" disabled selected>Select your state</option>
-        <option value="Andhra Pradesh">Andhra Pradesh</option>
-        <option value="Bihar">Bihar</option>
-        <option value="Gujarat">Gujarat</option>
-      </select>
-
-      <label for="district" id="district-label" style="display: none;">District</label>
-      <select id="district" name="district" style="display: none;" required></select>
-      <div class="loading" id="loading">Loading districts...</div>
-
-      <label for="city" id="city-label" style="display: none;">City/Town</label>
-      <input type="text" id="city" name="city" style="display: none;" required placeholder="Enter your city or town">
-
-      <label for="pin-code" id="pin-code-label" style="display: none;">Pin Code</label>
-      <input type="text" id="pin-code" name="pinCode" style="display: none;" required placeholder="Enter your pin code" pattern="[0-9]{6}" title="Pin code should be 6 digits">
-
-      <button type="submit" class="btn-primary">Register</button>
-
-      <p>Already have an account? <a href="login.html" class="link">Login here</a></p>
-    </form>
-  </div>
-
-  <script>
-    function getDistricts(state) {
-      const districtData = {
-        "Andhra Pradesh": ["Anantapur", "Chittoor", "East Godavari", "Guntur"],
-        "Bihar": ["Patna", "Gaya", "Bhagalpur"],
-        "Gujarat": ["Ahmedabad", "Surat", "Vadodara"]
-      };
-      return districtData[state] || [];
+    // Load districts based on selected state
+    function loadDistricts() {
+        const stateSelect = document.getElementById("state");
+        const districtSelect = document.getElementById("district");
+        const selectedState = stateSelect.value;
+        
+        districtSelect.innerHTML = "<option value=''>Select District</option>";
+        
+        if (selectedState && stateDistrictMap[selectedState]) {
+            stateDistrictMap[selectedState].forEach(district => {
+                const option = document.createElement("option");
+                option.value = district;
+                option.textContent = district;
+                districtSelect.appendChild(option);
+            });
+        }
     }
-  
-    document.getElementById('state').addEventListener('change', function(event) {
-      const state = event.target.value;
-      const loading = document.getElementById('loading');
-      const districtSelect = document.getElementById('district');
-      const districtLabel = document.getElementById('district-label');
-      const city = document.getElementById('city');
-      const cityLabel = document.getElementById('city-label');
-      const pinCode = document.getElementById('pin-code');
-      const pinCodeLabel = document.getElementById('pin-code-label');
-      
-      loading.style.display = 'block';
-      districtSelect.style.display = 'none';
-      districtLabel.style.display = 'none';
-      city.style.display = 'none';
-      cityLabel.style.display = 'none';
-      pinCode.style.display = 'none';
-      pinCodeLabel.style.display = 'none';
-  
-      setTimeout(function() {
-        const districts = getDistricts(state);
-        districtSelect.innerHTML = '';
-  
-        districts.forEach(function(district) {
-          const option = document.createElement('option');
-          option.value = district;
-          option.textContent = district;
-          districtSelect.appendChild(option);
+
+    // Simple form validation for registration
+    function validateRegistrationForm() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const phone = document.getElementById("phone").value;
+        
+        // Check if email is valid
+        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        if (!emailPattern.test(email)) {
+            alert("Invalid email format");
+            return false;
+        }
+
+        // Check if password matches
+        if (password !== confirmPassword) {
+            alert("Passwords do not match");
+            return false;
+        }
+
+        // Password strength validation (min 8 characters, at least one number and one special character)
+        const passwordPattern = /^(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordPattern.test(password)) {
+            alert("Password should be at least 8 characters long, with at least one number and one special character");
+            return false;
+        }
+
+        return true;
+    }
+
+    async function register() {
+        if (!validateRegistrationForm()) return;
+
+        const formData = {
+            fullname: document.getElementById("fullname").value,
+            email: document.getElementById("email").value,
+            phone: document.getElementById("phone").value,
+            password: document.getElementById("password").value,
+            confirmPassword: document.getElementById("confirmPassword").value,
+            restaurantName: document.getElementById("restaurantName").value,
+            state: document.getElementById("state").value,
+            district: document.getElementById("district").value,
+            city: document.getElementById("city").value,
+            pincode: document.getElementById("pincode").value
+        };
+
+        const response = await fetch("http://localhost:5000/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
         });
-  
-        loading.style.display = 'none';
-        districtSelect.style.display = 'block';
-        districtLabel.style.display = 'block';
-        city.style.display = 'block';
-        cityLabel.style.display = 'block';
-        pinCode.style.display = 'block';
-        pinCodeLabel.style.display = 'block';
-  
-        city.required = true;
-        pinCode.required = true;
-      }, 1000);
-    });
-  
-    document.getElementById('registration-form').addEventListener('submit', async function(event) {
-      event.preventDefault();
 
-      const password = document.getElementById('password').value;
-      const confirmPassword = document.getElementById('confirm-password').value;
+        const data = await response.json();
+        alert(data.message || data.error);
+        if (response.ok) toggleForms();
+    }
 
-      if (password !== confirmPassword) {
-        alert("Passwords do not match!");
-        return;
-      }
+    async function login() {
+        const formData = {
+            phone: document.getElementById("login-phone").value,
+            password: document.getElementById("login-password").value
+        };
 
-      const formData = {
-        name: document.getElementById('name').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        password: password,
-        restaurantName: document.getElementById('restaurant-name').value,
-        state: document.getElementById('state').value,
-        district: document.getElementById('district').value,
-        city: document.getElementById('city').value,
-        pinCode: document.getElementById('pin-code').value
-      };
-
-      try {
-        const response = await fetch('http://localhost:5000/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
+        const response = await fetch("http://localhost:5000/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
         });
+
+        const data = await response.json();
+        alert(data.message || data.error); 
 
         if (response.ok) {
-          alert('Registration successful!');
-          window.location.href = 'login.html';
-        } else {
-          const error = await response.json();
-          alert(`Registration failed: ${error.message}`);
+            // Store the token in localStorage (if necessary for later requests)
+            localStorage.setItem("token", data.token);
+            window.location.href = "../admin/Dashboard.html"; // Redirect after login
         }
-      } catch (error) {
-        alert(`Error: ${error.message}`);
-      }
-    });
-  </script>
-  
+    }
+
+    function toggleForms() {
+        const registerContainer = document.getElementById("register-container");
+        const loginContainer = document.getElementById("login-container");
+        registerContainer.style.display = registerContainer.style.display === "none" ? "block" : "none";
+        loginContainer.style.display = loginContainer.style.display === "none" ? "block" : "none";
+    }
+</script>
+
 </body>
 </html>
