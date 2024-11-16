@@ -18,9 +18,9 @@ Acknowledgments
 
 <h2>Features</h2>                                                                                                                                                                                              
 <h3>User Features</h3>                                                                                                                                                                                           
-<bold>Order Management</bold>
+<h3>Order Management</h3>
 
-Place Orders: Scan a QR code to access the digital menu and place orders.
+<p><b>Place Orders:</b> Scan a QR code to access the digital menu and place orders.</p>
 Order Customization: Customize orders or add special requests.
 Order Status Tracking: Track the status of orders (e.g., Pending, In Progress, Completed, Delivered).
 Pickup/Dine-in: Choose whether the order is for Pickup or Dine-in.
