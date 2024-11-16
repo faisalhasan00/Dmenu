@@ -4,8 +4,8 @@
 
 #Table of Contents                                                                                                                                                                                      
 Features                                                                                                                                                                                                
-  #User Features                                                                                                                                                                                        
-  #Admin Features                                                                                                                                                                                       
+  UserFeatures                                                                                                                                                                                        
+  Admin Features                                                                                                                                                                                       
 Installation                                                                                                                                                                                            
 Technologies Used                                                                                                                                                                                       
 API Documentation                                                                                                                                                                                       
