@@ -21,45 +21,45 @@ Acknowledgments
 <h3>Order Management</h3>
 
 <p><b>Place Orders:</b> Scan a QR code to access the digital menu and place orders.</p>
-Order Customization: Customize orders or add special requests.
-Order Status Tracking: Track the status of orders (e.g., Pending, In Progress, Completed, Delivered).
-Pickup/Dine-in: Choose whether the order is for Pickup or Dine-in.
-Pickup: Provide a name and receive a token number.
-Dine-in: Provide a name and table number.
-Order Confirmation: Receive notifications about order status updates.
-Delivery Time Display: View estimated delivery time with animations.
-Payment
+<p><b>Order Customization:</b> Customize orders or add special requests.</p>
+<p><b>Order Status Tracking:</b> Track the status of orders (e.g., Pending, In Progress, Completed, Delivered).</p>
+<p><b>Pickup/Dine-in:</b> Choose whether the order is for Pickup or Dine-in.</p>
+<p><b>Pickup:</b> Provide a name and receive a token number.</p>
+<p><b>Dine-in:</b> Provide a name and table number.</p>
+<p><b>Order Confirmation:</b> Receive notifications about order status updates.</p>
+<p><b>Delivery Time Display:</b> View estimated delivery time with animations.</p>
+<h3>Payment</h3>
 
-Online Payment: Complete payments using UPI, credit cards, and other payment methods.
-Secure Transactions: Ensure transactions are secure with encryption.
-User Experience
+<p><b>Online Payment:</b> Complete payments using UPI, credit cards, and other payment methods.
+<p><b>Secure Transactions:</b> Ensure transactions are secure with encryption.</p>
+<h3>User Experience</h3>
 
-Accessibility: The menu is designed for accessibility, with screen reader compatibility, high-contrast modes, and keyboard navigation.
-Mobile Optimization: Fully optimized for mobile devices to ensure smooth interaction.
-Menu Interaction
+<p><b>Accessibility:</b> The menu is designed for accessibility, with screen reader compatibility, high-contrast modes, and keyboard navigation.</p>
+<p><b>Mobile Optimization:</b> Fully optimized for mobile devices to ensure smooth interaction.</p>
+<h3>Menu Interaction</h3>
 
-View Menu: Access and browse the restaurant's menu.
-Search and Filter: Search and filter menu items by category, price, or popularity.
-Admin Features
-Menu Management
+<p><b>View Menu:</b> Access and browse the restaurant's menu.
+<p><b>Search and Filter:</b> Search and filter menu items by category, price, or popularity.</p>
+<h2>Admin Features</h2>
+<h3>Menu Management</h3>
 
-Add/Update/Delete Items: Manage menu items, including names, descriptions, prices, and categories.
-Menu Categories: Organize menu items into categories for better navigation.
-Order Management
+<p><b>Add/Update/Delete Items:</b> Manage menu items, including names, descriptions, prices, and categories.</p>
+<p><b>Menu Categories:</b> Organize menu items into categories for better navigation.</p>
+<h3>Order Management</h3>
 
-View Orders: Access and manage orders placed by customers.
-Update Order Status: Change the status of orders (e.g., Prepare, Complete, Deliver).
-Order History: Review past orders and manage order history.
-Sales Tracking
+<p><b>View Orders:</b> Access and manage orders placed by customers.</p>
+<p><b>Update Order Status:</b> Change the status of orders (e.g., Prepare, Complete, Deliver).</p>
+<p><b>Order History:</b> Review past orders and manage order history.</p>
+<h3>Sales Tracking</h3>
 
-Generate Reports: Generate reports on sales performance (weekly, monthly, yearly).
-Product Popularity: Track the popularity of menu items and analyze sales trends.
-Administrative Tools
+<p><b>Generate Reports:</b> Generate reports on sales performance (weekly, monthly, yearly).</p>
+<p><b>Product Popularity:</b> Track the popularity of menu items and analyze sales trends.</p>
+<h3>Administrative Tools</h3>
 
-Inventory Management: Manage stock levels and suppliers.
-Dynamic Pricing: Set dynamic pricing based on time, stock levels, and events.
-Staff Management: Create and manage staff schedules, roles, and tasks.
-Analytics and Insights
+<p><b>Inventory Management:</b> Manage stock levels and suppliers.</p>
+<p><b>Dynamic Pricing:</b> Set dynamic pricing based on time, stock levels, and events.</p>
+<p><b>Staff Management:</b> Create and manage staff schedules, roles, and tasks.</p>
+<h3>Analytics and Insights</h3>
 
 Customer Feedback Analysis: Collect and analyze customer feedback.
 Sales Forecasting: Use historical data to forecast sales.
