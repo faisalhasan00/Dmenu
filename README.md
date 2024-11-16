@@ -5,18 +5,18 @@ Dmenu - Digital Menu Application
 Dmenu is an advanced digital menu and order management system designed to optimize the dining experience for both customers and restaurant administrators. It allows users to browse menus, place orders, and make secure payments, while restaurant admins can efficiently manage menus, track orders, and generate sales reports.
 
 #Table of Contents                                                                                                                                                                                      
-Features
-  #User Features
-  #Admin Features
-Installation
-Technologies Used
-API Documentation
-Running the Project
-Contributing
-License
-Acknowledgments
-Features
-User Features
+Features                                                                                                                                                                                                
+  #User Features                                                                                                                                                                                        
+  #Admin Features                                                                                                                                                                                       
+Installation                                                                                                                                                                                            
+Technologies Used                                                                                                                                                                                       
+API Documentation                                                                                                                                                                                       
+Running the Project                                                                                                                                                                                     
+Contributing                                                                                                                                                                                            
+License                                                                                                                                                                                                 
+Acknowledgments                                                                                                                                                                                         
+Features                                                                                                                                                                                                
+User Features                                                                                                                                                                                           
 Order Management
 
 Place Orders: Scan a QR code to access the digital menu and place orders.
