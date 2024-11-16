@@ -61,20 +61,20 @@ Acknowledgments
 <p><b>Staff Management:</b> Create and manage staff schedules, roles, and tasks.</p>
 <h3>Analytics and Insights</h3>
 
-Customer Feedback Analysis: Collect and analyze customer feedback.
-Sales Forecasting: Use historical data to forecast sales.
-Heatmaps and Analytics: Track user interactions with the menu to improve design.
-Security and Compliance
+<p><b>Customer Feedback Analysis:</b> Collect and analyze customer feedback.</p>
+<p><b>Sales Forecasting:</b> Use historical data to forecast sales.</p>
+<p><b>Heatmaps and Analytics:</b> Track user interactions with the menu to improve design.</p>
+<h3>Security and Compliance</h3>
 
-Data Encryption: Ensure all data, including user and payment information, is encrypted.
-Compliance: Adhere to regulations such as GDPR, PCI-DSS.
-Integration and Automation
+<p><b>Data Encryption:</b> Ensure all data, including user and payment information, is encrypted.</p>
+<p><b>Compliance:</b> Adhere to regulations such as GDPR, PCI-DSS.</p>
+<h3>Integration and Automation</h3>
 
-POS Integration: Integrate with existing POS systems for seamless order processing.
-Reservation Systems: Integrate with reservation systems for advance bookings.
-Backup and Recovery
+<p><b>POS Integration:</b> Integrate with existing POS systems for seamless order processing.</p>
+<p><b>Reservation Systems:</b> Integrate with reservation systems for advance bookings.</p>
+<h3>Backup and Recovery</h3>
 
-Backup Strategy: Implement regular backups and recovery plans for data protection.
-Legal and Compliance
+<p><b>Backup Strategy:</b> Implement regular backups and recovery plans for data protection.
+Legal and Compliance</p>
 
-Terms of Service and Privacy Policy: Develop clear terms of service and privacy policies for legal compliance.
+<p><b>Terms of Service and Privacy Policy:</b> Develop clear terms of service and privacy policies for legal compliance.</p>
