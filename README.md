@@ -16,9 +16,9 @@ Contributing
 License                                                                                                                                                                                                 
 Acknowledgments
 
-<h2>Features  <h2>                                                                                                                                                                                              
-<h3>User Features<h3>                                                                                                                                                                                           
-<bold>Order Management<bold>
+<h2>Features</h2>                                                                                                                                                                                              
+<h3>User Features</h3>                                                                                                                                                                                           
+<bold>Order Management</bold>
 
 Place Orders: Scan a QR code to access the digital menu and place orders.
 Order Customization: Customize orders or add special requests.
