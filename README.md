@@ -1,7 +1,5 @@
 
-Here is a README file for your Dmenu project, incorporating the user and admin features you've provided:
-
-Dmenu - Digital Menu Application
+<h>Dmenu - Digital Menu Application</h1>
 Dmenu is an advanced digital menu and order management system designed to optimize the dining experience for both customers and restaurant administrators. It allows users to browse menus, place orders, and make secure payments, while restaurant admins can efficiently manage menus, track orders, and generate sales reports.
 
 #Table of Contents                                                                                                                                                                                      
