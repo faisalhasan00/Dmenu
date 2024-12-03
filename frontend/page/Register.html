@@ -1,221 +1,234 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register and Login</title>
 
-    <style>
-        /* Basic styling */
-        body { 
-            font-family: Arial, sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            background-color: #f4f7fa; 
-        }
-        .form-container { 
-            max-width: 400px; 
-            width: 100%; 
-            padding: 20px; 
-            border: 1px solid #ccc; 
-            border-radius: 8px; 
-            background-color: #fff; 
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-        }
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .form-group { 
-            margin: 15px 0; 
-        }
-        .form-group input, 
-        .form-group select { 
-            width: 100%; 
-            padding: 10px; 
-            border: 1px solid #ccc; 
-            border-radius: 4px; 
-            box-sizing: border-box;
-        }
-        .form-group button { 
-            width: 100%; 
-            padding: 10px; 
-            background-color: #007bff; 
-            color: #fff; 
-            border: none; 
-            border-radius: 4px; 
-            cursor: pointer; 
-        }
-        .form-group button:hover { 
-            background-color: #0056b3; 
-        }
-        .form-group a {
-            text-align: center;
-            display: block;
-            margin-top: 10px;
-            color: #007bff;
-            text-decoration: none;
-        }
-        .form-group a:hover {
-            text-decoration: underline;
-        }
-        .loading {
-            text-align: center;
-            font-size: 16px;
-            color: #007bff;
-        }
-    </style>
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Restaurant Dashboard</title>
+  <link href="assets/img/favicon.png" rel="icon">
+  <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/vendor/bootstrap-icons/bootstrap-icons.css">
+  <link href="assets/css/style.css" rel="stylesheet">
 </head>
+
 <body>
 
-<div class="form-container" id="register-container">
-    <h2>Register</h2>
-    <div class="form-group"><input type="text" id="fullname" placeholder="Full Name" required></div>
-    <div class="form-group"><input type="email" id="email" placeholder="Email" required></div>
-    <div class="form-group"><input type="tel" id="phone" placeholder="Phone Number" required></div>
-    <div class="form-group"><input type="password" id="password" placeholder="Password" required></div>
-    <div class="form-group"><input type="password" id="confirmPassword" placeholder="Confirm Password" required></div>
-    <div class="form-group"><input type="text" id="restaurantName" placeholder="Restaurant/Hotel Name" required></div>
-    <div class="form-group">
-        <select id="state" onchange="loadDistricts()" required>
-            <option value="">Select State</option>
-            <option value="Bihar">Bihar</option>
-            <option value="Telangana">Telangana</option>
-        </select>
+  <!-- Header -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="Dashboard.html" class="logo d-flex align-items-center">
+        <span class="d-none d-lg-block">Restaurant Dashboard</span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
     </div>
-    <div class="form-group">
-        <select id="district" required>
-            <option value="">Select District</option>
-        </select>
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+        <!-- Notification Bell Icon -->
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-bell"></i>
+            <span class="badge bg-primary badge-number" id="notification-badge">4</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications" id="notifications-list">
+            <li class="dropdown-header">
+              You have 4 new notifications
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li class="notification-item">
+              <i class="bi bi-info-circle text-primary"></i>
+              <div>
+                <h4>New Order</h4>
+                <p>A new order has been placed</p>
+                <p>10 mins ago</p>
+              </div>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Logout Button -->
+        <li class="nav-item">
+          <a class="nav-link" href="#" id="logout-btn">
+            <i class="bi bi-box-arrow-right"></i>
+            Logout
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="Dashboard.html">
+          <i class="bi bi-grid"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="Order.html">
+          <i class="bi bi-receipt"></i><span>Orders</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="payment.html">
+          <i class="bi bi-receipt"></i><span>Payment</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="Menuediting.html">
+          <i class="bi bi-menu-button-wide"></i><span>Menu Management</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="Reports.html">
+          <i class="bi bi-bar-chart-line"></i><span>Reports</span>
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <main id="main" class="main">
+    <div class="pagetitle">
+      <h1>Dashboard</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="Dashboard.html">Home</a></li>
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </nav>
     </div>
-    <div class="form-group"><input type="text" id="city" placeholder="City/Town" required></div>
-    <div class="form-group"><input type="text" id="pincode" placeholder="Pin Code" required></div>
-    <div class="form-group"><button type="button" onclick="register()">Register</button></div>
-    <div class="form-group"><a href="javascript:void(0)" onclick="toggleForms()">Already a user? Login</a></div>
-</div>
 
-<div class="form-container" id="login-container" style="display: none;">
-    <h2>Login</h2>
-    <div class="form-group"><input type="tel" id="login-phone" placeholder="Phone Number" required></div>
-    <div class="form-group"><input type="password" id="login-password" placeholder="Password" required></div>
-    <div class="form-group"><button type="button" onclick="login()">Login</button></div>
-    <div class="form-group"><a href="javascript:void(0)" onclick="toggleForms()">New user? Register</a></div>
-</div>
+    <!-- QR Code Section -->
+    <section class="section qr-code">
+      <div class="card">
+        <div class="card-body text-center">
+          <h5 class="card-title">Scan to Access Menu</h5>
+          <img id="qrCode" alt="QR Code" />
+          <p class="text-muted">Scan this QR code to view and order from the menu.</p>
+          <!-- Download QR Code Button -->
+          <button id="download-qr-btn" class="btn btn-primary">Download QR Code</button>
+        </div>
+      </div>
+    </section>
 
-<script>
-    // Predefined state and district mapping
-    const stateDistrictMap = {
-        "Bihar": ["Darbhanga", "Muzaffarpur", "Purnia"],
-        "Telangana": ["Abcd", "RangaReddy"]
-    };
+    <!-- Orders Received Section -->
+    <section class="section orders-received">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Orders Received</h5>
+          <ul id="ordersList" class="list-group">
+            <!-- Orders will be populated here -->
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
 
-    // Load districts based on selected state
-    function loadDistricts() {
-        const stateSelect = document.getElementById("state");
-        const districtSelect = document.getElementById("district");
-        const selectedState = stateSelect.value;
-        
-        districtSelect.innerHTML = "<option value=''>Select District</option>";
-        
-        if (selectedState && stateDistrictMap[selectedState]) {
-            stateDistrictMap[selectedState].forEach(district => {
-                const option = document.createElement("option");
-                option.value = district;
-                option.textContent = district;
-                districtSelect.appendChild(option);
-            });
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; 2024 <strong><span>Restaurant Dashboard</span></strong>. All Rights Reserved
+    </div>
+  </footer>
+
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <script>
+    // QR Code Generation
+    async function generateQRCode() {
+      try {
+        // Fetch restaurantId and token from localStorage
+        const restaurantId = localStorage.getItem('restaurantId');
+        const token = localStorage.getItem('authToken');
+
+        if (restaurantId && token) {
+          // Generate QR code using the restaurantId and token
+          new QRious({
+            element: document.getElementById('qrCode'),
+            value: `${window.location.origin}/frontend/User/Menu.html?restaurantId=${restaurantId}&token=${token}`,
+            size: 150,
+          });
+        } else {
+          console.error("Missing restaurantId or token in localStorage");
         }
+      } catch (error) {
+        console.error('Error in QR code generation:', error);
+      }
     }
 
-    // Simple form validation for registration
-    function validateRegistrationForm() {
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirmPassword").value;
-        const phone = document.getElementById("phone").value;
-        
-        // Check if email is valid
-        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-        if (!emailPattern.test(email)) {
-            alert("Invalid email format");
-            return false;
+    // Fetch Orders
+    async function fetchOrders() {
+      try {
+        const response = await fetch('http://localhost:5000/api/payment');
+        if (!response.ok) {
+          console.error('Error fetching orders:', response.statusText);
+          return;
         }
 
-        // Check if password matches
-        if (password !== confirmPassword) {
-            alert("Passwords do not match");
-            return false;
-        }
-
-        // Password strength validation (min 8 characters, at least one number and one special character)
-        const passwordPattern = /^(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d@$!%*?&]{8,}$/;
-        if (!passwordPattern.test(password)) {
-            alert("Password should be at least 8 characters long, with at least one number and one special character");
-            return false;
-        }
-
-        return true;
+        const orders = await response.json();
+        displayOrders(orders);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
     }
 
-    async function register() {
-        if (!validateRegistrationForm()) return;
-
-        const formData = {
-            fullname: document.getElementById("fullname").value,
-            email: document.getElementById("email").value,
-            phone: document.getElementById("phone").value,
-            password: document.getElementById("password").value,
-            confirmPassword: document.getElementById("confirmPassword").value,
-            restaurantName: document.getElementById("restaurantName").value,
-            state: document.getElementById("state").value,
-            district: document.getElementById("district").value,
-            city: document.getElementById("city").value,
-            pincode: document.getElementById("pincode").value
-        };
-
-        const response = await fetch("http://localhost:5000/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-        });
-
-        const data = await response.json();
-        alert(data.message || data.error);
-        if (response.ok) toggleForms();
+    function getStatusClass(status) {
+      switch (status) {
+        case "Completed":
+          return "text-success";
+        case "Pending":
+          return "text-warning";
+        case "In Progress":
+          return "text-info";
+        default:
+          return "text-muted";
+      }
     }
 
-    async function login() {
-        const formData = {
-            phone: document.getElementById("login-phone").value,
-            password: document.getElementById("login-password").value
-        };
+    function displayOrders(orders) {
+      const ordersList = document.getElementById("ordersList");
+      ordersList.innerHTML = "";
 
-        const response = await fetch("http://localhost:5000/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-        });
-
-        const data = await response.json();
-        alert(data.message || data.error); 
-
-        if (response.ok) {
-            // Store the token in localStorage (if necessary for later requests)
-            localStorage.setItem("token", data.token);
-            window.location.href = "../admin/Dashboard.html"; // Redirect after login
-        }
+      orders.forEach(order => {
+        const listItem = document.createElement("li");
+        listItem.className = "list-group-item";
+        listItem.innerHTML = ` 
+          <strong>Order ID:</strong> ${order.orderId} <br> 
+          <strong>Customer:</strong> ${order.name} <br> 
+          <strong>Total:</strong> ₹${order.amount} <br> 
+          <strong>Status:</strong> <span class="${getStatusClass(order.status)}">${order.status}</span>
+        `;
+        ordersList.appendChild(listItem);
+      });
     }
 
-    function toggleForms() {
-        const registerContainer = document.getElementById("register-container");
-        const loginContainer = document.getElementById("login-container");
-        registerContainer.style.display = registerContainer.style.display === "none" ? "block" : "none";
-        loginContainer.style.display = loginContainer.style.display === "none" ? "block" : "none";
-    }
-</script>
+    // Logout Functionality
+    document.getElementById('logout-btn').addEventListener('click', function() {
+      // Clear localStorage or sessionStorage to log the user out
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('restaurantId');
 
+      // Redirect to the login page (or homepage)
+      window.location.href = '/login.html';  // Update with your actual login page path
+    });
+
+    // Download QR Code Functionality
+    document.getElementById('download-qr-btn').addEventListener('click', function() {
+      const qrCode = document.getElementById('qrCode');
+      const qrCodeURL = qrCode.src;
+      const link = document.createElement('a');
+      link.href = qrCodeURL;
+      link.download = 'restaurant_qr_code.png';
+      link.click();
+    });
+
+    // Initialize
+    generateQRCode();
+    // Uncomment below to refresh orders list every second
+    // setInterval(fetchOrders, 1000);
+  </script>
 </body>
+
 </html>

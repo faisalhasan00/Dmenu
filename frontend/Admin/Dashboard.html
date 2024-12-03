@@ -16,14 +16,14 @@
   <!-- Header -->
   <header id="header" class="header fixed-top d-flex align-items-center">
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
-        <!-- <img src="assets/img/logo.png" alt="Restaurant Logo"> -->
+      <a href="Dashboard.html" class="logo d-flex align-items-center">
         <span class="d-none d-lg-block">Restaurant Dashboard</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div>
     <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
+        <!-- Notification Bell Icon -->
         <li class="nav-item dropdown">
           <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-bell"></i>
@@ -45,6 +45,14 @@
             </li>
           </ul>
         </li>
+
+        <!-- Logout Button -->
+        <li class="nav-item">
+          <a class="nav-link" href="#" id="logout-btn">
+            <i class="bi bi-box-arrow-right"></i>
+            Logout
+          </a>
+        </li>
       </ul>
     </nav>
   </header>
@@ -53,7 +61,7 @@
   <aside id="sidebar" class="sidebar">
     <ul class="sidebar-nav" id="sidebar-nav">
       <li class="nav-item">
-        <a class="nav-link " href="Dashboard.html">
+        <a class="nav-link" href="Dashboard.html">
           <i class="bi bi-grid"></i>
           <span>Dashboard</span>
         </a>
@@ -61,6 +69,11 @@
       <li class="nav-item">
         <a class="nav-link collapsed" href="Order.html">
           <i class="bi bi-receipt"></i><span>Orders</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="payment.html">
+          <i class="bi bi-receipt"></i><span>Payment</span>
         </a>
       </li>
       <li class="nav-item">
@@ -81,7 +94,7 @@
       <h1>Dashboard</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="">Home</a></li>
+          <li class="breadcrumb-item"><a href="Dashboard.html">Home</a></li>
           <li class="breadcrumb-item active">Dashboard</li>
         </ol>
       </nav>
@@ -92,8 +105,10 @@
       <div class="card">
         <div class="card-body text-center">
           <h5 class="card-title">Scan to Access Menu</h5>
-          <img id="qrCode" alt="QR Code" src="" />
+          <img id="qrCode" alt="QR Code" />
           <p class="text-muted">Scan this QR code to view and order from the menu.</p>
+          <!-- Download QR Code Button -->
+          <button id="download-qr-btn" class="btn btn-primary">Download QR Code</button>
         </div>
       </div>
     </section>
@@ -109,7 +124,6 @@
         </div>
       </div>
     </section>
-
   </main>
 
   <footer id="footer" class="footer">
@@ -122,23 +136,39 @@
   <script src="assets/js/main.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
   <script>
-    // Generate QR Code
-    const qr = new QRious({
-      element: document.getElementById('qrCode'),
-      value: 'http://127.0.0.1:5500/frontend/User/Menu.html', // Localhost Menu URL
-      size: 150
-    });
+    // QR Code Generation
+    async function generateQRCode() {
+      try {
+        // Fetch restaurantId and token from localStorage
+        const restaurantId = localStorage.getItem('restaurantId');
+        const token = localStorage.getItem('authToken');
 
-    // Fetch and display orders every 1 second
-    document.addEventListener("DOMContentLoaded", () => {
-      setInterval(fetchOrders, 1000);  // Auto-refresh every 1 second
-    });
+        if (restaurantId && token) {
+          // Generate QR code using the restaurantId and token
+          new QRious({
+            element: document.getElementById('qrCode'),
+            value: `${window.location.origin}/frontend/User/Menu.html?restaurantId=${restaurantId}&token=${token}`,
+            size: 150,
+          });
+        } else {
+          console.error("Missing restaurantId or token in localStorage");
+        }
+      } catch (error) {
+        console.error('Error in QR code generation:', error);
+      }
+    }
 
+    // Fetch Orders
     async function fetchOrders() {
       try {
-        const response = await fetch('http://localhost:5000/api/payment');  // Fetch data from your API
+        const response = await fetch('http://localhost:5000/api/payment');
+        if (!response.ok) {
+          console.error('Error fetching orders:', response.statusText);
+          return;
+        }
+
         const orders = await response.json();
-        displayOrders(orders);  // Display orders in the HTML
+        displayOrders(orders);
       } catch (error) {
         console.error("Error fetching orders:", error);
       }
@@ -147,32 +177,57 @@
     function getStatusClass(status) {
       switch (status) {
         case "Completed":
-          return "text-success";  // Green color for completed orders
+          return "text-success";
         case "Pending":
-          return "text-warning";  // Yellow color for pending orders
+          return "text-warning";
         case "In Progress":
-          return "text-info";  // Blue color for orders in progress
+          return "text-info";
         default:
-          return "text-muted";  // Gray color for unknown statuses
+          return "text-muted";
       }
     }
 
     function displayOrders(orders) {
       const ordersList = document.getElementById("ordersList");
-      ordersList.innerHTML = ""; // Clear any existing content
+      ordersList.innerHTML = "";
 
       orders.forEach(order => {
         const listItem = document.createElement("li");
         listItem.className = "list-group-item";
         listItem.innerHTML = ` 
-          <strong>Order ID:</strong> ${order.orderId} <br>
-          <strong>Customer:</strong> ${order.name} <br>
-          <strong>Total:</strong> ₹${order.amount} <br>
-          <strong>Status:</strong> <span class="${getStatusClass(order.status)}">${order.status}</span> <br>
+          <strong>Order ID:</strong> ${order.orderId} <br> 
+          <strong>Customer:</strong> ${order.name} <br> 
+          <strong>Total:</strong> ₹${order.amount} <br> 
+          <strong>Status:</strong> <span class="${getStatusClass(order.status)}">${order.status}</span>
         `;
         ordersList.appendChild(listItem);
       });
     }
+
+    // Logout Functionality
+    document.getElementById('logout-btn').addEventListener('click', function() {
+      // Clear localStorage or sessionStorage to log the user out
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('restaurantId');
+
+      // Redirect to the login page (or homepage)
+      window.location.href = '/login.html';  // Update with your actual login page path
+    });
+
+    // Download QR Code Functionality
+    document.getElementById('download-qr-btn').addEventListener('click', function() {
+      const qrCode = document.getElementById('qrCode');
+      const qrCodeURL = qrCode.src;
+      const link = document.createElement('a');
+      link.href = qrCodeURL;
+      link.download = 'restaurant_qr_code.png';
+      link.click();
+    });
+
+    // Initialize
+    generateQRCode();
+    // Uncomment below to refresh orders list every second
+    // setInterval(fetchOrders, 1000);
   </script>
 </body>
 

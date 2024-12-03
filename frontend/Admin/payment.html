@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Document Metadata -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+
+    <!-- Stylesheets --> 
+    <link rel="stylesheet" href="./assets/css/payment.css">
+
+    <!-- JavaScript file -->
+    <script defer src="script.js"></script>
+
+    <!-- Inline styles for quick adjustments -->
+    <style>
+        /* Utility classes for visibility and buttons */
+        .hidden { display: none; }
+        .btn { padding: 10px 20px; background-color: #007bff; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background-color: #0056b3; }
+
+        /* Styles for responsive tables */
+        .responsive table { width: 100%; border-collapse: collapse; }
+        .responsive th, .responsive td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .responsive th { background-color: #f4f4f4; }
+
+        /* Loading indicator styling */
+        .loading { text-align: center; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <!-- Section for Adding Bank Accounts -->
+        <section class="add-account">
+            <h1>Payment Management</h1>
+
+            <!-- Button to toggle Add Account form visibility -->
+            <button id="addAccountBtn" class="btn" aria-expanded="false">Add Account</button>
+
+            <!-- Hidden form for adding bank account details -->
+            <form id="addAccountForm" class="hidden" aria-hidden="true">
+                <fieldset>
+                    <legend>Add Bank Account</legend>
+                    <div class="form-group">
+                        <label for="accountHolderName">Account Holder Name:</label>
+                        <input type="text" id="accountHolderName" name="accountHolderName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bankAccountNumber">Bank Account Number:</label>
+                        <input type="text" id="bankAccountNumber" name="bankAccountNumber" required 
+                               pattern="\d{10,18}" title="Please enter a valid bank account number">
+                    </div>
+                    <div class="form-group">
+                        <label for="bankName">Bank Name:</label>
+                        <input type="text" id="bankName" name="bankName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ifscCode">IFSC Code:</label>
+                        <input type="text" id="ifscCode" name="ifscCode" required 
+                               pattern="[A-Z]{4}0[A-Z0-9]{6}" title="Please enter a valid IFSC code">
+                    </div>
+                    <!-- Button to submit form -->
+                    <button type="submit" class="btn">Save Details</button>
+                </fieldset>
+            </form>
+        </section>
+
+        <hr>
+
+        <!-- Section for Transaction History -->
+        <section class="transactions">
+            <h2>Transaction History</h2>
+            <!-- Loading indicator for asynchronous content -->
+            <div id="loadingIndicator" class="loading hidden">Loading transactions...</div>
+            <!-- Table to display transaction details -->
+            <table id="transactionsTable" class="responsive">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Order Amount</th>
+                        <th>Restaurant Charges</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Placeholder row when no transactions are present -->
+                    <tr>
+                        <td colspan="5" class="loading">No transactions to display.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // References to DOM elements
+            const addAccountBtn = document.getElementById('addAccountBtn');
+            const addAccountForm = document.getElementById('addAccountForm');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const transactionsTableBody = document.querySelector('#transactionsTable tbody');
+
+            // Toggle visibility of Add Account form
+            addAccountBtn.addEventListener('click', () => {
+                addAccountForm.classList.toggle('hidden');
+                addAccountBtn.setAttribute('aria-expanded', !addAccountForm.classList.contains('hidden'));
+                addAccountForm.setAttribute('aria-hidden', addAccountForm.classList.contains('hidden'));
+                addAccountBtn.textContent = addAccountForm.classList.contains('hidden') 
+                    ? 'Add Account' 
+                    : 'Hide Account Form';
+            });
+
+            // Handle submission of Add Account form
+            addAccountForm.addEventListener('submit', async (event) => {
+                event.preventDefault(); // Prevent default form submission
+
+                // Gather account details from form
+                const accountDetails = {
+                    accountHolderName: document.getElementById('accountHolderName').value,
+                    bankAccountNumber: document.getElementById('bankAccountNumber').value,
+                    bankName: document.getElementById('bankName').value,
+                    ifscCode: document.getElementById('ifscCode').value,
+                };
+
+                // Send account details to backend
+                try {
+                    const response = await fetch('/api/add-account', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(accountDetails),
+                    });
+
+                    const result = await response.json();
+                    alert(result.message || 'Account details saved successfully!');
+                    addAccountForm.reset();
+                } catch (error) {
+                    console.error('Error saving account details:', error);
+                    alert('Failed to save account details. Please try again later.');
+                }
+            });
+
+            // Load transaction data from backend
+            async function loadTransactions() {
+                loadingIndicator.classList.remove('hidden'); // Show loading indicator
+                try {
+                    const response = await fetch('/api/transactions'); // Fetch transactions
+                    const transactions = await response.json();
+
+                    transactionsTableBody.innerHTML = ''; // Clear existing rows
+
+                    if (transactions.length === 0) {
+                        // Display message if no transactions are found
+                        transactionsTableBody.innerHTML = `<tr><td colspan="5" class="loading">No transactions to display.</td></tr>`;
+                        return;
+                    }
+
+                    // Populate table with transactions
+                    transactions.forEach((transaction) => {
+                        const row = `
+                            <tr>
+                                <td>${transaction.order_id}</td>
+                                <td>${transaction.order_amount}</td>
+                                <td>${transaction.restaurant_share}</td>
+                                <td>${transaction.status}</td>
+                                <td>${new Date(transaction.created_at).toLocaleString()}</td>
+                            </tr>
+                        `;
+                        transactionsTableBody.innerHTML += row;
+                    });
+                } catch (error) {
+                    console.error('Error loading transactions:', error);
+                } finally {
+                    loadingIndicator.classList.add('hidden'); // Hide loading indicator
+                }
+            }
+
+            // Load transactions when the page is ready
+            loadTransactions();
+        });
+    </script>
+</body>
+</html>

@@ -1,12 +1,9 @@
-// backend/models/User.js
-
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 // Define User schema
 const userSchema = new mongoose.Schema(
   {
-    
     name: { 
       type: String, 
       required: true // Full name of the user
@@ -44,7 +41,12 @@ const userSchema = new mongoose.Schema(
     pinCode: { 
       type: String, 
       required: true // Postal code for the restaurant
-    }
+    },
+    role: { 
+      type: String, 
+      default: 'user', // Default role for regular users
+      enum: ['user', 'admin'] // User can have 'user' or 'admin' roles
+    },
   }, 
   { 
     timestamps: true // Automatically adds createdAt and updatedAt fields
@@ -57,7 +59,7 @@ userSchema.pre('save', async function(next) {
     try {
       this.password = await bcrypt.hash(this.password, 10);
     } catch (error) {
-      next(error); // Pass error to the next middleware
+      return next(error); // Pass error to the next middleware
     }
   }
   next();
@@ -66,6 +68,15 @@ userSchema.pre('save', async function(next) {
 // Method to validate password
 userSchema.methods.isValidPassword = async function(password) {
   return await bcrypt.compare(password, this.password);
+};
+
+// Method to fetch user's own data
+userSchema.statics.getOwnData = async function(userId) {
+  try {
+    return await this.findById(userId).select('-password'); // Exclude password from the returned data
+  } catch (error) {
+    throw new Error('Unable to fetch user data');
+  }
 };
 
 // Export User model

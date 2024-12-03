@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant Dashboard - Payment Management</title>
+    <title>Order Management</title>
     <!-- Fonts and Vendor Styles -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans|Nunito|Poppins" rel="stylesheet">
     <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-    <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
+
     <style>
         /* Styling for Payment Management */
         h2 {
@@ -144,7 +144,7 @@
         <div class="d-flex align-items-center justify-content-between">
             <a href="index.html" class="logo d-flex align-items-center">
                 <img src="assets/img/logo.png" alt="Restaurant Logo">
-                <span class="d-none d-lg-block">Restaurant Dashboard</span>
+                <span class="d-none d-lg-block">Order Management</span>
             </a>
             <i class="bi bi-list toggle-sidebar-btn"></i>
         </div>
@@ -153,7 +153,7 @@
     <aside id="sidebar" class="sidebar">
         <ul class="sidebar-nav" id="sidebar-nav">
             <li class="nav-item">
-                <a class="nav-link " href="Dashboard.html">
+                <a class="nav-link" href="Dashboard.html">
                     <i class="bi bi-grid"></i>
                     <span>Dashboard</span>
                 </a>
@@ -164,13 +164,13 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link collapsed" href="Order.html">
-                    <i class="bi bi-receipt"></i><span>Menu Management</span>
+                <a class="nav-link collapsed" href="MenuManagement.html">
+                    <i class="bi bi-list-ul"></i><span>Menu Management</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link collapsed" href="Reports.html">
-                    <i class="bi bi-receipt"></i><span>Reports</span>
+                    <i class="bi bi-bar-chart"></i><span>Reports</span>
                 </a>
             </li>
         </ul>
@@ -179,28 +179,28 @@
     <!-- Main Content -->
     <main id="main" class="main">
         <div class="pagetitle">
-            <h1>Payment Management</h1>
+            <h1>Order Management</h1>
         </div>
 
         <!-- Search Box -->
         <div class="search-container">
-            <input type="text" id="searchBox" placeholder="Search Payments..." onkeyup="filterOrders()" oninput="toggleClearButton()" />
+            <input type="text" id="searchBox" placeholder="Search Orders..." onkeyup="filterOrders()" oninput="toggleClearButton()" />
             <button class="clear-search" onclick="clearSearch()">Clear</button>
         </div>
 
         <!-- Loading Indicator -->
-        <div id="loadingIndicator" class="loading-indicator">Loading payments...</div>
+        <div id="loadingIndicator" class="loading-indicator">Loading orders...</div>
 
-        <!-- Payments Table -->
+        <!-- Orders Table -->
         <div class="table-container">
             <table id="ordersTable">
                 <thead>
                     <tr>
-                        <th>Payment ID</th>
                         <th>Order ID</th>
+                        <th>Payment ID</th>
                         <th>Amount</th>
-                        <th>Currency</th>
-                        <th>Name</th>
+                        <th>Customer</th>
+                        <th>Status</th>
                         <th>Date</th>
                         <th>Actions</th>
                     </tr>
@@ -209,11 +209,11 @@
             </table>
         </div>
 
-        <!-- Modal for Payment Details -->
+        <!-- Modal for Order Details -->
         <div id="orderModal" class="modal" onclick="closeModal(event)">
             <div class="modal-content" onclick="event.stopPropagation();">
                 <span class="close" onclick="closeModal()">&times;</span>
-                <h3>Payment Details</h3>
+                <h3>Order Details</h3>
                 <div id="orderDetails"></div>
             </div>
         </div>
@@ -222,94 +222,111 @@
     <!-- Scripts -->
     <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
-        // JavaScript for Payment Management
         async function loadOrders() {
+            const token = localStorage.getItem('authToken'); // Retrieve JWT token from local storage
+            if (!token) {
+                console.error("Token not found. User might not be logged in.");
+                return;
+            }
+        
             try {
-                document.getElementById('loadingIndicator').style.display = 'block';
-                const response = await fetch('http://localhost:5000/api/payment');
-                
+                const response = await fetch('/api/orders', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+        
+                if (response.status === 401) {
+                    console.error("Unauthorized access. Please log in again.");
+                    // Redirect to login or prompt user to log in
+                    return;
+                }
+        
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    console.error(`Failed to fetch orders: ${response.statusText}`);
+                    return;
+                }
+        
+                const orders = await response.json();
+        
+                if (!Array.isArray(orders)) {
+                    console.error("Invalid orders response format:", orders);
+                    return;
                 }
 
-                const orders = await response.json();
+                // Populate the orders table
                 const tableBody = document.querySelector('#ordersTable tbody');
-                tableBody.innerHTML = '';  // Clear existing rows
-
+                tableBody.innerHTML = ''; // Clear existing rows
                 orders.forEach(order => {
                     const row = document.createElement('tr');
-                    const formattedDate = new Date(order.createdAt).toLocaleDateString();
-
                     row.innerHTML = `
-                        <td>${order.paymentId}</td>
                         <td>${order.orderId}</td>
+                        <td>${order.paymentId}</td>
                         <td>${order.amount}</td>
-                        <td>${order.currency}</td>
-                        <td>${order.name}</td>
-                        <td>${formattedDate}</td>
-                        <td><button class="view-order-btn" onclick="viewOrder('${order._id}')">View Order</button></td>
+                        <td>${order.customerName}</td>
+                        <td>${order.status}</td>
+                        <td>${new Date(order.createdAt).toLocaleString()}</td>
+                        <td><button class="view-order-btn" onclick="viewOrder(${order.orderId})">View</button></td>
                     `;
                     tableBody.appendChild(row);
                 });
+
             } catch (error) {
-                console.error('Error fetching payments:', error);
-                alert('Failed to load payments. Please try again later.');
-            } finally {
-                document.getElementById('loadingIndicator').style.display = 'none';
+                console.error("Error fetching orders:", error);
             }
         }
+        
+        // Load orders when the page loads
+        document.addEventListener('DOMContentLoaded', loadOrders);
 
         function viewOrder(orderId) {
-            fetch(`http://localhost:5000/api/payment/${orderId}`)
+            fetch(`/api/orders/${orderId}`)
                 .then(response => response.json())
                 .then(order => {
-                    const itemNames = order.items.map(item => item.name).join(', ');
                     document.getElementById('orderDetails').innerHTML = `
-                        <p><strong>Payment ID:</strong> ${order.paymentId}</p>
                         <p><strong>Order ID:</strong> ${order.orderId}</p>
+                        <p><strong>Payment ID:</strong> ${order.paymentId}</p>
                         <p><strong>Amount:</strong> ₹${order.amount}</p>
-                        <p><strong>Currency:</strong> ${order.currency}</p>
-                        <p><strong>Name:</strong> ${order.name}</p>
-                        <p><strong>Table Number:</strong> ${order.items[0].tableNumber || 'N/A'}</p>
-                        <p><strong>Items:</strong> ${itemNames}</p>
-                        <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+                        <p><strong>Customer:</strong> ${order.customerName}</p>
+                        <p><strong>Status:</strong> ${order.status}</p>
+                        <p><strong>Items:</strong> ${order.items.map(item => item.name).join(', ')}</p>
                     `;
                     document.getElementById('orderModal').style.display = 'block';
                 })
-                .catch(error => {
-                    console.error('Error fetching payment details:', error);
-                    alert('Failed to load payment details.');
-                });
+                .catch(error => console.error('Error fetching order details:', error));
         }
 
-        function closeModal(event) {
+        function closeModal() {
             document.getElementById('orderModal').style.display = 'none';
         }
 
+        // Filter orders based on search query
         function filterOrders() {
-            const searchValue = document.getElementById('searchBox').value.toLowerCase();
+            const searchQuery = document.getElementById('searchBox').value.toLowerCase();
             const rows = document.querySelectorAll('#ordersTable tbody tr');
             rows.forEach(row => {
-                row.style.display = row.innerText.toLowerCase().includes(searchValue) ? '' : 'none';
+                const orderId = row.cells[0].textContent.toLowerCase();
+                const paymentId = row.cells[1].textContent.toLowerCase();
+                const customer = row.cells[3].textContent.toLowerCase();
+                const status = row.cells[4].textContent.toLowerCase();
+                const matches = orderId.includes(searchQuery) || paymentId.includes(searchQuery) || customer.includes(searchQuery) || status.includes(searchQuery);
+                row.style.display = matches ? '' : 'none';
             });
         }
 
         function toggleClearButton() {
-            document.querySelector('.clear-search').style.display = document.getElementById('searchBox').value ? 'inline' : 'none';
+            const searchBox = document.getElementById('searchBox');
+            const clearButton = document.querySelector('.clear-search');
+            clearButton.style.display = searchBox.value ? 'inline-block' : 'none';
         }
 
         function clearSearch() {
             document.getElementById('searchBox').value = '';
             filterOrders();
-            toggleClearButton();
         }
-
-        document.addEventListener('DOMContentLoaded', loadOrders);
     </script>
-     <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
-     <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-     <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
-     <script src="assets/js/main.js"></script>
 </body>
 
 </html>
